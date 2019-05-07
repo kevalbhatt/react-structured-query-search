@@ -1,1 +1,1 @@
-# visual-search
+# react-structured-query-search
