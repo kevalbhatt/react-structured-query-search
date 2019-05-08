@@ -1,0 +1,282 @@
+/******************************************************************************/
+/* Filter tokenizer */
+
+//colors
+$color_celeste_approx: #ccc;
+$color_gray_nurse_approx: #e8e8e8;
+$color_gallery_approx: #f0f0f0;
+$color_bon_jour_approx: #e0e0e0;
+$color_desert_storm_approx: #f8f8f8;
+$color_log_cabin_approx: #222;
+$color_suva_gray_approx: #888888;
+$white: #ffffff;
+$color_silver_chalice_approx: #b0b0b0;
+$black: #000;
+$blue: #00f;
+$color_nobel_approx: #b3b3b3;
+$color_matisse_approx: #216ba5;
+
+//@extend-elements
+//original selectors
+//.filter-input-group .filter-category, .filter-input-group .filter-operator, .filter-input-group .filter-value
+%filter-popup {
+	overflow: auto;
+	display: block;
+	float: left;
+	font-weight: bold;
+	margin-right: 5px;
+}
+
+//original selectors
+//.filter-tokenizer ul.typeahead-selector li a:hover, .filter-tokenizer ul.typeahead-selector .hover a
+%extend_2 {
+	text-decoration: none;
+	background-color: $blue;
+	color: $white;
+}
+
+//original selectors
+//.datepicker__triangle, .datepicker__triangle:before
+%extend_3 {
+	//Instead of the line below you could use @include box-sizing($bs)
+	box-sizing: content-box;
+	position: absolute;
+	border: 8px solid transparent;
+	height: 0;
+	width: 1px;
+	border-top: none;
+	border-bottom-color: $color_gallery_approx;
+}
+
+.filter-tokenizer {
+	width: 100%;
+	border: 1px solid $color_celeste_approx;
+	//Instead of the line below you could use @include border-radius($radius, $vertical-radius)
+	border-radius: 5px;
+	padding: 10px;
+	font-size: 90%;
+	display: table;
+	&:first-child {
+		padding-left: 0;
+		padding-top: 0;
+		padding-bottom: 0;
+	}
+	.input-group-addon {
+		border: 0;
+		border-right: 1px solid $color_celeste_approx;
+		//Instead of the line below you could use @include border-top-right-radius($radius)
+		border-top-right-radius: 0;
+		//Instead of the line below you could use @include border-bottom-right-radius($radius)
+		border-bottom-right-radius: 0;
+		display: table-cell;
+	}
+	.token-collection {
+		display: table-cell;
+	}
+	.typeahead {
+		overflow: hidden;
+		display: block;
+		input {
+			outline: 0;
+			border: 0;
+			width: 100%;
+			&:focus {
+				outline: 0;
+			}
+		}
+	}
+	.typeahead-token {
+		display: block;
+		float: left;
+		background-color: $color_gray_nurse_approx;
+		background-image: linear-gradient(
+			$color_gallery_approx,
+			$color_bon_jour_approx
+		);
+		border: 1px solid $color_celeste_approx;
+		//Instead of the line below you could use @include border-radius($radius, $vertical-radius)
+		border-radius: 2px;
+		margin: 3px;
+		padding: 5px;
+		font-weight: bold;
+	}
+	ul.typeahead-selector {
+		z-index: 100;
+		position: absolute;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		background-color: $color_desert_storm_approx;
+		border: 1px solid $color_log_cabin_approx;
+		width: 200px;
+		max-height: 200px;
+		overflow-y: auto;
+		//Instead of the line below you could use @include box-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+		box-shadow: 5px 5px 5px $color_suva_gray_approx;
+		li {
+			z-index: 9999;
+			border-bottom: 1px solid $color_celeste_approx;
+			background-image: linear-gradient($white, $color_gallery_approx);
+			&.header {
+				background-image: none;
+				background-color: $color_silver_chalice_approx;
+				color: $white;
+				font-weight: bold;
+				padding: 5px;
+			}
+			a {
+				color: $black;
+				padding: 5px;
+				width: 100%;
+				display: block;
+				&:hover {
+					@extend %extend_2;
+				}
+			}
+		}
+		.hover a {
+			@extend %extend_2;
+		}
+	}
+}
+.filter-input-group {
+	border: 0;
+	//Instead of the line below you could use @include border-radius($radius, $vertical-radius)
+	border-radius: 2px;
+	overflow: auto;
+	display: block;
+	margin: 3px;
+	padding: 5px;
+	float: left;
+	.filter-category {
+		@extend %filter-popup;
+	}
+	.filter-operator {
+		@extend %filter-popup;
+	}
+	.filter-value {
+		@extend %filter-popup;
+	}
+}
+.datepicker__triangle {
+	margin-top: -8px;
+	margin-left: -8px;
+	position: absolute;
+	left: 50px;
+	@extend %extend_3;
+	&:before {
+		@extend %extend_3;
+		content: "";
+		z-index: -1;
+		border-width: 8px;
+		top: -1px;
+		left: -8px;
+		border-bottom-color: $color_silver_chalice_approx;
+	}
+}
+.datepicker {
+	font-size: 11px;
+	background-color: $white;
+	color: $black;
+	border: 1px solid $color_silver_chalice_approx;
+	//Instead of the line below you could use @include border-radius($radius, $vertical-radius)
+	border-radius: 4px;
+	display: inline-block;
+	position: relative;
+	//Instead of the line below you could use @include box-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+	box-shadow: 5px 5px 5px $color_suva_gray_approx;
+}
+.datepicker__container {
+	position: absolute;
+	display: inline-block;
+	z-index: 2147483647;
+}
+.datepicker__header {
+	text-align: center;
+	background-color: $color_gallery_approx;
+	border-bottom: 1px solid $color_silver_chalice_approx;
+	//Instead of the line below you could use @include border-top-left-radius($radius)
+	border-top-left-radius: 4px;
+	//Instead of the line below you could use @include border-top-right-radius($radius)
+	border-top-right-radius: 4px;
+	padding-top: 8px;
+	position: relative;
+}
+.datepicker__current-month {
+	color: $black;
+	font-weight: bold;
+	font-size: 13px;
+}
+.datepicker__navigation {
+	line-height: 24px;
+	text-align: center;
+	cursor: pointer;
+	position: absolute;
+	top: 10px;
+	width: 0;
+	border: 6px solid transparent;
+}
+.datepicker__navigation--previous {
+	left: 10px;
+	border-right-color: $color_celeste_approx;
+	&:hover {
+		border-right-color: $color_nobel_approx;
+	}
+}
+.datepicker__navigation--next {
+	right: 10px;
+	border-left-color: $color_celeste_approx;
+	&:hover {
+		border-left-color: $color_nobel_approx;
+	}
+}
+.datepicker__week-day {
+	color: $color_celeste_approx;
+	display: inline-block;
+	width: 28px;
+	line-height: 24px;
+}
+.datepicker__month {
+	margin: 5px;
+	text-align: center;
+}
+.datepicker__day {
+	color: $black;
+	display: inline-block;
+	width: 24px;
+	line-height: 24px;
+	text-align: center;
+	margin: 2px;
+	cursor: pointer;
+	&:hover {
+		//Instead of the line below you could use @include border-radius($radius, $vertical-radius)
+		border-radius: 4px;
+		background-color: $color_gallery_approx;
+	}
+}
+.datepicker__day--today {
+	font-weight: bold;
+}
+.datepicker__day--selected {
+	//Instead of the line below you could use @include border-radius($radius, $vertical-radius)
+	border-radius: 4px;
+	background-color: $color_matisse_approx;
+	color: $white;
+	&:hover {
+		background-color: $color_matisse_approx;
+	}
+}
+.datepicker__day--disabled {
+	cursor: default;
+	color: $color_celeste_approx;
+	&:hover {
+		background-color: transparent;
+	}
+}
+.datepicker__input {
+	position: relative;
+	line-height: 16px;
+	&:focus {
+		outline: none;
+	}
+}
