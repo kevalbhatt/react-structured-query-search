@@ -1,11 +1,12 @@
 import React, { Component } from "react";
+import ReactDOM from "react-dom";
 import Tether from "tether";
 
 export default class Popover extends Component {
   displayName = "Popover";
 
   componentWillMount() {
-    popoverContainer = document.createElement("span");
+    let popoverContainer = document.createElement("span");
     popoverContainer.className = "datepicker__container";
 
     this._popoverElement = popoverContainer;
@@ -27,9 +28,10 @@ export default class Popover extends Component {
   }
 
   _tetherOptions() {
+    let current = ReactDOM.findDOMNode(this);
     return {
       element: this._popoverElement,
-      target: this.current.parentElement,
+      target: current.parentElement,
       attachment: "top left",
       targetAttachment: "bottom left",
       targetOffset: "10px 0",
@@ -46,19 +48,19 @@ export default class Popover extends Component {
     };
   }
 
-  _renderPopover() {
-    React.render(this._popoverComponent(), this._popoverElement);
+  _renderPopover = () => {
+    ReactDOM.render(this._popoverComponent(), this._popoverElement);
 
     if (this._tether != null) {
       this._tether.setOptions(this._tetherOptions());
     } else {
       this._tether = new Tether(this._tetherOptions());
     }
-  }
+  };
 
   componentWillUnmount() {
     this._tether.destroy();
-    React.unmountComponentAtNode(this._popoverElement);
+    ReactDOM.unmountComponentAtNode(this._popoverElement);
     if (this._popoverElement.parentNode) {
       this._popoverElement.parentNode.removeChild(this._popoverElement);
     }

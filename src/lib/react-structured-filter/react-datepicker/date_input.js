@@ -11,7 +11,7 @@ export default class DateInput extends Component {
 
   constructor(props) {
     super(props);
-    this.entryRef = React.createRef();
+    this.entryRef = null;
     this.state = {
       dateFormat: "YYYY-MM-DD"
     };
@@ -37,9 +37,9 @@ export default class DateInput extends Component {
 
   toggleFocus(focus) {
     if (focus) {
-      this.entryRef.current.focus();
+      this.entryRef.focus();
     } else {
-      this.entryRef.current.blur();
+      this.entryRef.blur();
     }
   }
 
@@ -87,7 +87,7 @@ export default class DateInput extends Component {
   render() {
     return (
       <input
-        ref={this.entryRef}
+        ref={ref => (this.entryRef = ref)}
         type="text"
         value={this.state.value}
         onClick={this.handleClick}

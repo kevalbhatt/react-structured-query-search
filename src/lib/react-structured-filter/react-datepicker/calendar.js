@@ -37,15 +37,15 @@ class Calendar extends Component {
     this.props.onSelect(day);
   }
 
-  renderWeek(weekStart, key) {
+  renderWeek = (weekStart, key) => {
     if (!weekStart.weekInMonth(this.state.date)) {
       return;
     }
 
     return <div key={key}>{this.days(weekStart)}</div>;
-  }
+  };
 
-  renderDay(day, key) {
+  renderDay = (day, key) => {
     var minDate = new DateUtil(this.props.minDate).safeClone(),
       maxDate = new DateUtil(this.props.maxDate).safeClone(),
       disabled = day.isBefore(minDate) || day.isAfter(maxDate);
@@ -60,7 +60,7 @@ class Calendar extends Component {
         disabled={disabled}
       />
     );
-  }
+  };
 
   days(weekStart) {
     return weekStart.mapDaysInWeek(this.renderDay);

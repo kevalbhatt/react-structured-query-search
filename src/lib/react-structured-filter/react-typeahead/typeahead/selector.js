@@ -77,11 +77,20 @@ export default class TypeaheadSelector extends Component {
 
   navDown = () => {
     this._nav(1);
-  }
+  };
 
   navUp = () => {
     this._nav(-1);
-  }
+  };
+
+  // _scrollTo = () => {
+  //   if (this.selectedItemRef) {
+  //     let listParent = this.listParentRef.getBoundingClientRect(),
+  //       selectedItem = this.selectedItemRef.getBoundingClientRect(),
+  //       parentTop = listParent.top,
+  //       selectedTop = selectedItem.top;
+  //   }
+  // };
 
   render() {
     var classes = {
@@ -91,13 +100,14 @@ export default class TypeaheadSelector extends Component {
       this.props.customClasses.results
     ] = this.props.customClasses.results;
     var classList = classNames(classes);
-
+    this.selectedItemRef = null;
     var results = this.props.options.map(function(result, i) {
+      let elementSelected = this.state.selectionIndex === i;
       return (
         <TypeaheadOption
           isAllowOperator={this.props.isAllowOperator}
           key={result}
-          hover={this.state.selectionIndex === i}
+          hover={elementSelected}
           customClasses={this.props.customClasses}
           onClick={this._onClick.bind(this, result)}
         >
@@ -106,7 +116,7 @@ export default class TypeaheadSelector extends Component {
       );
     }, this);
     return (
-      <ul className={classList}>
+      <ul className={classList} ref={ref => (this.listParentRef = ref)}>
         <li className="header">{this.props.header}</li>
         {results}
       </ul>

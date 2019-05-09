@@ -36,7 +36,7 @@ export default class TypeaheadTokenizer extends Component {
 
   constructor(props) {
     super(props);
-    this.typeaheadRef = React.createRef();
+    this.typeaheadRef = null;
     this.state = {
       selected: this.props.defaultSelected || [],
       category: "",
@@ -140,7 +140,7 @@ export default class TypeaheadTokenizer extends Component {
 
     // Remove token ONLY when bksp pressed at beginning of line
     // without a selection
-    var entry = this.typeaheadRef.current.getInputRef();
+    var entry = this.typeaheadRef.getInputRef();
     if (
       entry.selectionStart == entry.selectionEnd &&
       entry.selectionStart == 0
@@ -178,13 +178,13 @@ export default class TypeaheadTokenizer extends Component {
   _addTokenForValue = value => {
     if (this.state.category == "") {
       this.setState({ category: value });
-      this.typeaheadRef.current.setEntryText("");
+      this.typeaheadRef.setEntryText("");
       return;
     }
 
     if (this.state.operator == "") {
       this.setState({ operator: value });
-      this.typeaheadRef.current.setEntryText("");
+      this.typeaheadRef.setEntryText("");
       return;
     }
 
@@ -196,7 +196,7 @@ export default class TypeaheadTokenizer extends Component {
 
     this.state.selected.push(value);
     this.setState({ selected: this.state.selected });
-    this.typeaheadRef.current.setEntryText("");
+    this.typeaheadRef.setEntryText("");
     this.props.onTokenAdd(this.state.selected);
 
     this.setState({ category: "", operator: "" });
@@ -217,16 +217,18 @@ export default class TypeaheadTokenizer extends Component {
 
   onClickOfDivFocusInput = e => {
     e.stopPropagation();
-    var entry = this.typeaheadRef.current.getInputRef();
-    if (entry) {
-      entry.focus();
+    if (this.typeaheadRef) {
+      var entry = this.typeaheadRef.getInputRef();
+      if (entry) {
+        entry.focus();
+      }
     }
   };
 
   _getTypeahed({ classList }) {
     return (
       <Typeahead
-        ref={this.typeaheadRef}
+        ref={ref => (this.typeaheadRef = ref)}
         isAllowOperator={this.props.isAllowOperator}
         onElementFocused={this.onElementFocused}
         isElemenFocused={this.state.focused}

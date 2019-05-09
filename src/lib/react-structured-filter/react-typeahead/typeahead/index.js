@@ -42,10 +42,10 @@ export default class Typeahead extends Component {
 
   constructor(props) {
     super(props);
-    this.datepickerRef = React.createRef();
-    this.entryRef = React.createRef();
-    this.selRef = React.createRef();
-    this.inputRef = React.createRef();
+    this.datepickerRef = null;
+    this.entryRef = null;
+    this.selRef = null;
+    this.inputRef = null;
     this.state = {
       // The set of all options... Does this need to be state?  I guess for lazy load...
       loadingOptions: false,
@@ -89,7 +89,7 @@ export default class Typeahead extends Component {
 
   setEntryText(value) {
     if (this.entryRef != null) {
-      this.entryRef.current.value = value;
+      this.entryRef.value = value;
     }
     this._onTextEntryUpdated();
   }
@@ -111,7 +111,7 @@ export default class Typeahead extends Component {
 
     return (
       <TypeaheadSelector
-        ref={this.selRef}
+        ref={ref => (this.selRef = ref)}
         options={this.state.visible}
         header={this.state.header}
         onOptionSelected={this._onOptionSelected.bind(this)}
@@ -121,7 +121,7 @@ export default class Typeahead extends Component {
   }
 
   _onOptionSelected(option) {
-    var nEntry = this.entryRef.current;
+    var nEntry = this.entryRef;
     nEntry.focus();
     nEntry.value = option;
     this.setState({
@@ -136,7 +136,7 @@ export default class Typeahead extends Component {
   _onTextEntryUpdated = () => {
     var value = "";
     if (this.entryRef != null) {
-      value = this.entryRef.current.value;
+      value = this.entryRef.value;
     }
     this.setState({
       visible: this.getOptionsForValue(value, this.state.options),
@@ -146,31 +146,31 @@ export default class Typeahead extends Component {
   };
 
   _onEnter = event => {
-    if (this.selRef && this.selRef.current) {
-      if (!this.selRef.current.state.selection) {
+    if (this.selRef && this.selRef) {
+      if (!this.selRef.state.selection) {
         return this.props.onKeyDown(event);
       }
 
-      this._onOptionSelected(this.selRef.current.state.selection);
+      this._onOptionSelected(this.selRef.state.selection);
     }
   };
 
   _onEscape = () => {
-    this.selRef.current.setSelectionIndex(null);
+    this.selRef.setSelectionIndex(null);
   };
 
   _onTab = event => {
-    var option = this.selRef.current.state.selection
-      ? this.selRef.current.state.selection
+    var option = this.selRef.state.selection
+      ? this.selRef.state.selection
       : this.state.visible[0];
     this._onOptionSelected(option);
   };
 
   eventMap(event) {
     var events = {};
-    if (this.selRef && this.selRef.current) {
-      events[KeyEvent.DOM_VK_UP] = this.selRef.current.navUp;
-      events[KeyEvent.DOM_VK_DOWN] = this.selRef.current.navDown;
+    if (this.selRef && this.selRef) {
+      events[KeyEvent.DOM_VK_UP] = this.selRef.navUp;
+      events[KeyEvent.DOM_VK_DOWN] = this.selRef.navDown;
     }
     events[KeyEvent.DOM_VK_RETURN] = events[
       KeyEvent.DOM_VK_ENTER
@@ -243,17 +243,21 @@ export default class Typeahead extends Component {
 
   getInputRef() {
     if (this._showDatePicker()) {
-      return this.datepickerRef.current.dateinputRef.current.entryRef.current;
+      return this.datepickerRef.dateinputRef.entryRef;
     } else {
-      return this.entryRef.current;
+      return this.entryRef;
     }
   }
 
   _getTypeaheadInput({ classList, inputClassList }) {
     return (
-      <span ref={this.inputRef} className={classList} onFocus={this._onFocus}>
+      <span
+        ref={ref => (this.inputRef = ref)}
+        className={classList}
+        onFocus={this._onFocus}
+      >
         <input
-          ref={this.entryRef}
+          ref={ref => (this.entryRef = ref)}
           type="text"
           placeholder={this.props.placeholder}
           className={inputClassList}
@@ -280,10 +284,14 @@ export default class Typeahead extends Component {
 
     if (this._showDatePicker()) {
       return (
-        <span ref={this.inputRef} className={classList} onFocus={this._onFocus}>
+        <span
+          ref={ref => (this.inputRef = ref)}
+          className={classList}
+          onFocus={this._onFocus}
+        >
           <DatePicker
             isAllowOperator={this.props.isAllowOperator}
-            ref={this.datepickerRef}
+            ref={ref => (this.datepickerRef = ref)}
             dateFormat={"YYYY-MM-DD"}
             selected={moment()}
             onChange={this._handleDateChange}

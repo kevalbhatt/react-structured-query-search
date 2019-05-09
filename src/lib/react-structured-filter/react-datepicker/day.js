@@ -10,7 +10,7 @@ export default class Day extends Component {
   };
 
   render() {
-    classes = classnames({
+    let classes = classnames({
       datepicker__day: true,
       "datepicker__day--disabled": this.props.disabled,
       "datepicker__day--selected": this.props.day.sameDay(this.props.selected),

@@ -14,7 +14,7 @@ export default class DatePicker extends Component {
 
   constructor(props) {
     super(props);
-    this.dateinputRef = React.createRef();
+    this.dateinputRef = null;
     this.state = {
       focus: true
     };
@@ -32,12 +32,12 @@ export default class DatePicker extends Component {
     });
   };
 
-  handleSelect = (date) => {
+  handleSelect = date => {
     this.hideCalendar();
     this.setSelected(date);
   };
 
-  setSelected = (date) => {
+  setSelected = date => {
     this.props.onChange(date.moment());
   };
 
@@ -67,7 +67,7 @@ export default class DatePicker extends Component {
     return (
       <div>
         <DateInput
-          ref={this.dateinputRef}
+          ref={ref => (this.dateinputRef = ref)}
           date={this.props.selected}
           dateFormat={this.props.dateFormat}
           focus={this.state.focus}

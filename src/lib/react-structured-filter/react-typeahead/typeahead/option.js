@@ -21,7 +21,7 @@ export default class TypeaheadOption extends Component {
 
   constructor(props) {
     super(props);
-    this.anchorRef = React.createRef();
+    this.anchorRef = null;
     this.state = {
       hover: false
     };
@@ -50,7 +50,11 @@ export default class TypeaheadOption extends Component {
 
     return (
       <li className={classList} onClick={this._onClick}>
-        <a href="#" className={this._getClasses()} ref={this.anchorRef}>
+        <a
+          href="#"
+          className={this._getClasses()}
+          ref={ref => (this.anchorRef = ref)}
+        >
           {this.props.children}
         </a>
       </li>

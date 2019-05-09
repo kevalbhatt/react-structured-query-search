@@ -174,13 +174,13 @@ export default class OTokenizer extends Tokenizer {
 		const { isAllowOperator } = this.props;
 		if (this.state.category == "") {
 			this.setState({ category: value });
-			this.typeaheadRef.current.setEntryText("");
+			this.typeaheadRef.setEntryText("");
 			return;
 		}
 
 		if (isAllowOperator && this.state.operator == "") {
 			this.setState({ operator: value });
-			this.typeaheadRef.current.setEntryText("");
+			this.typeaheadRef.setEntryText("");
 			return;
 		}
 
@@ -201,7 +201,7 @@ export default class OTokenizer extends Tokenizer {
 			Object.assign(stateObj, { operator: "" });
 		}
 
-		this.typeaheadRef.current.setEntryText("");
+		this.typeaheadRef.setEntryText("");
 		this.setState(stateObj, () =>
 			this.props.onTokenAdd(this.state.selected)
 		);
@@ -211,7 +211,7 @@ export default class OTokenizer extends Tokenizer {
 	_getTypeahed({ classList }) {
 		return (
 			<Typeahead
-				ref={this.typeaheadRef}
+				ref={ref => (this.typeaheadRef = ref)}
 				isAllowOperator={this.props.isAllowOperator}
 				onElementFocused={this.onElementFocused}
 				isElemenFocused={this.state.focused}

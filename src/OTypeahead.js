@@ -54,9 +54,12 @@ export default class OTypeahead extends Typeahead {
 						<div>Loading...</div>
 					)
 				) : (
-					<span ref={this.inputRef} onFocus={this._onFocus}>
+					<span
+						ref={ref => (this.inputRef = ref)}
+						onFocus={this._onFocus}
+					>
 						<input
-							ref={this.entryRef}
+							ref={ref => (this.entryRef = ref)}
 							type="text"
 							placeholder={this.props.placeholder}
 							className={inputClassList}
