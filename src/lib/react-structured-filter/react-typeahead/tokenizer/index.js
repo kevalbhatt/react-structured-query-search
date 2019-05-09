@@ -28,6 +28,8 @@ export default class TypeaheadTokenizer extends Component {
     customClasses: {},
     defaultValue: "",
     placeholder: "",
+    allowDuplicateOptions: false,
+    allowDuplicateCategories: true,
     onTokenAdd() {},
     onTokenRemove() {}
   };

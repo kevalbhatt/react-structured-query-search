@@ -10,46 +10,59 @@ export default class App extends Component {
 		};
 	}
 
+	/**
+	 * [getSymbolOptions Get the values using Ajax call]
+	 * @return {[type]}
+	 */
 	getSymbolOptions = () => {
 		if (this.state.SymbolData.length === 0) {
 			return new Promise((resolve, reject) => {
 				setTimeout(() => {
-					this.setState({ SymbolData: ["abc","def","xyz"] }, () => {
-						return resolve(this.state.SymbolData);
-					});
+					this.setState(
+						{ SymbolData: ["TFSC", "PIL", "VNET"] },
+						() => {
+							return resolve(this.state.SymbolData);
+						}
+					);
 				}, 2000);
 			});
 		} else {
 			return this.state.SymbolData;
 		}
-	}
+	};
 
+	/**
+	 * [getSectorOptions Get the values for sector category]
+	 * @return {[array]}
+	 */
 	getSectorOptions() {
-		return ["tt", "xx", "ccc"];
+		return ["Finance", "Consumer Services"];
 	}
 
+	/**
+	 * [getIndustryOptions Get the values for Industry category]
+	 * @return {[array]}
+	 */
 	getIndustryOptions() {
-		return ["NN"];
+		return ["Business Services", "Other Specialty Stores"];
 	}
 
 	render() {
 		return (
 			<div className="container">
 				<ReactStructuredQuerySearch
-					isAllowOperator={false}
-					allowDuplicateCategories={true}
-					allowDuplicateOptions={false}
+					isAllowOperator={true}
 					options={[
 						{
 							category: "Symbol",
 							type: "textoptions",
-							operator: ["x", "y", "z"],
+							operator: ["==", "!="],
 							options: this.getSymbolOptions
 						},
 						{
 							category: "Name",
 							type: "text",
-							operator: () => ["xxxx", "y", "z"]
+							operator: () => ["==", "!==", "containes"]
 						},
 						{ category: "Price", type: "number" },
 						{ category: "MarketCap", type: "number" },

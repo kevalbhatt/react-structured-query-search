@@ -34,8 +34,6 @@ export default class Typeahead extends Component {
     customClasses: {},
     defaultValue: "",
     placeholder: "",
-    allowDuplicateOptions: false,
-    allowDuplicateCategories: true,
     onKeyDown: function(event) {
       return;
     },
