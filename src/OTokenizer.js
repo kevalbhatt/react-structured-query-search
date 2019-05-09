@@ -1,22 +1,32 @@
 import React, { Component } from "react";
+import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import { Tokenizer } from "./lib/react-structured-filter/react-typeahead/react-typeahead";
 import Typeahead from "./OTypeahead";
 
 // Override the Tokenizer
 export default class OTokenizer extends Tokenizer {
-	handleClickOutside() {
-		document.addEventListener(
-			"click",
-			e => {
-				if (this.node.contains(e.target)) {
-					return;
-				}
-				this.setState({ focused: false });
-			},
-			false
-		);
+	componentDidMount() {
+		document.addEventListener("click", this.handleClickOutside);
 	}
+
+	componentWillUnmount() {
+		document.removeListener("click", this.handleClickOutside);
+	}
+
+	handleClickOutside = e => {
+		if (this) {
+			let node = ReactDOM.findDOMNode(this);
+			if (
+				(node && node.contains(e.target)) ||
+				(e.target && e.target.className == "typeahead-option")
+			) {
+				return;
+			}
+			console.log("KK");
+			this.setState({ focused: false });
+		}
+	};
 
 	onElementFocused = val => {
 		this.setState(val);

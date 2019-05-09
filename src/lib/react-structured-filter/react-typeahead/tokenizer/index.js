@@ -43,7 +43,6 @@ export default class TypeaheadTokenizer extends Component {
       operator: "",
       focused: false
     };
-    this.handleClickOutside();
   }
 
   // TODO: Support initialized tokens
