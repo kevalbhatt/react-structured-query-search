@@ -54,16 +54,14 @@ export default class Typeahead extends Component {
       datatype: this.props.datatype,
 
       // The currently visible set of options
-      visible: this.getOptionsForValue(
-        this.props.defaultValue,
-        this.props.options
-      ),
+      visible: this.getOptionsForValue(null, this.props.options),
 
       // This should be called something else, "entryValue"
       entryValue: this.props.defaultValue,
 
       // A valid typeahead value
-      selection: null
+      selection: null,
+      focused: false
     };
   }
 
@@ -76,7 +74,10 @@ export default class Typeahead extends Component {
     });
   }
 
-  getOptionsForValue(value, options) {
+  getOptionsForValue(value = this.props.defaultValue, options) {
+    if (value == null) {
+      value = this.props.defaultValue;
+    }
     var result = fuzzy.filter(value, options).map(function(res) {
       return res.string;
     });
@@ -84,7 +85,14 @@ export default class Typeahead extends Component {
     if (this.props.maxVisible) {
       result = result.slice(0, this.props.maxVisible);
     }
-    return result;
+    if (
+      this.props.datatype == "textoptions" &&
+      !this.props.isAllowCustomValue
+    ) {
+      return result.length == 0 ? [this.props.fuzzySearchEmptyMessage] : result;
+    } else {
+      return result;
+    }
   }
 
   setEntryText(value) {
@@ -95,8 +103,14 @@ export default class Typeahead extends Component {
   }
 
   _renderIncrementalSearchResults() {
-    if (!this.props.isElemenFocused) {
-      return "";
+    if (this.props.isElemenFocused == undefined) {
+      if (!this.state.focused) {
+        return "";
+      }
+    } else {
+      if (!this.props.isElemenFocused) {
+        return "";
+      }
     }
 
     // Something was just selected
@@ -112,8 +126,10 @@ export default class Typeahead extends Component {
     return (
       <TypeaheadSelector
         ref={ref => (this.selRef = ref)}
+        fromTokenizer={this.props.fromTokenizer}
         options={this.state.visible}
         header={this.state.header}
+        fuzzySearchEmptyMessage={this.props.fuzzySearchEmptyMessage}
         onOptionSelected={this._onOptionSelected.bind(this)}
         customClasses={this.props.customClasses}
       />
@@ -121,16 +137,17 @@ export default class Typeahead extends Component {
   }
 
   _onOptionSelected(option) {
-    var nEntry = this.entryRef;
-    nEntry.focus();
-    nEntry.value = option;
-    this.setState({
-      visible: this.getOptionsForValue(option, this.state.options),
-      selection: option,
-      entryValue: option
-    });
-
-    this.props.onOptionSelected(option);
+    if (option !== this.props.fuzzySearchEmptyMessage) {
+      var nEntry = this.entryRef;
+      nEntry.focus();
+      nEntry.value = option;
+      this.setState({
+        visible: this.getOptionsForValue(option, this.state.options),
+        selection: option,
+        entryValue: option
+      });
+      this.props.onOptionSelected(option);
+    }
   }
 
   _onTextEntryUpdated = () => {
@@ -190,10 +207,11 @@ export default class Typeahead extends Component {
       // If no options were provided so we can match on anything
       if (this.props.options.length === 0) {
         this._onOptionSelected(this.state.entryValue);
-      }
-
-      // If what has been typed in is an exact match of one of the options
-      if (this.props.options.indexOf(this.state.entryValue) > -1) {
+      } else if (
+        this.props.options.indexOf(this.state.entryValue) > -1 ||
+        (this.state.entryValue.trim() != "" && this.props.isAllowCustomValue)
+      ) {
+        // If what has been typed in is an exact match of one of the options
         this._onOptionSelected(this.state.entryValue);
       }
     }
@@ -216,7 +234,11 @@ export default class Typeahead extends Component {
   };
 
   _onFocus = event => {
-    this.props.onElementFocused({ focused: true });
+    if (this.props.onElementFocused) {
+      this.props.onElementFocused({ focused: true });
+    } else {
+      this.setState({ focused: true });
+    }
   };
 
   isDescendant(parent, child) {

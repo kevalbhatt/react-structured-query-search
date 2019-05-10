@@ -102,12 +102,14 @@ export default class TypeaheadSelector extends Component {
     var classList = classNames(classes);
     this.selectedItemRef = null;
     var results = this.props.options.map(function(result, i) {
-      let elementSelected = this.state.selectionIndex === i;
+      let elementSelected = this.state.selectionIndex === i,
+        disabledElement = result == this.props.fuzzySearchEmptyMessage;
       return (
         <TypeaheadOption
           isAllowOperator={this.props.isAllowOperator}
           key={result}
-          hover={elementSelected}
+          disabled={disabledElement}
+          hover={disabledElement ? false : elementSelected}
           customClasses={this.props.customClasses}
           onClick={this._onClick.bind(this, result)}
         >
@@ -117,7 +119,9 @@ export default class TypeaheadSelector extends Component {
     }, this);
     return (
       <ul className={classList} ref={ref => (this.listParentRef = ref)}>
-        <li className="header">{this.props.header}</li>
+        {this.props.fromTokenizer === true ? (
+          <li className="header">{this.props.header}</li>
+        ) : null}
         {results}
       </ul>
     );

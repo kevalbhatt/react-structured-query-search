@@ -30,6 +30,7 @@ export default class TypeaheadTokenizer extends Component {
     placeholder: "",
     allowDuplicateOptions: false,
     allowDuplicateCategories: true,
+    fuzzySearchEmptyMessage: "No result found",
     onTokenAdd() {},
     onTokenRemove() {}
   };
@@ -230,6 +231,7 @@ export default class TypeaheadTokenizer extends Component {
         ref={ref => (this.typeaheadRef = ref)}
         isAllowOperator={this.props.isAllowOperator}
         onElementFocused={this.onElementFocused}
+        fuzzySearchEmptyMessage={this.props.fuzzySearchEmptyMessage}
         isElemenFocused={this.state.focused}
         className={classList}
         placeholder={this.props.placeholder}

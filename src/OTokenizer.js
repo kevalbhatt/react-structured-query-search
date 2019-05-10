@@ -23,7 +23,6 @@ export default class OTokenizer extends Tokenizer {
 			) {
 				return;
 			}
-			console.log("KK");
 			this.setState({ focused: false });
 		}
 	};
@@ -44,8 +43,12 @@ export default class OTokenizer extends Tokenizer {
 		if (this.state.category == "") {
 			var categories = [];
 			for (var i = 0; i < this.props.options.length; i++) {
-				let category = this.props.options[i].category;
+				let category = this.props.options[i].category,
+					isAllowCustomValue = this.props.options[i]
+						.isAllowCustomValue;
+
 				if (
+					isAllowCustomValue == false &&
 					this.skipCategorySet &&
 					this.skipCategorySet.has(category)
 				) {
@@ -161,6 +164,18 @@ export default class OTokenizer extends Tokenizer {
 		return this.props.options;
 	}
 
+	_getAllowCustomValue() {
+		if (this.state.category) {
+			for (var i = 0; i < this.props.options.length; i++) {
+				if (this.props.options[i].category == this.state.category) {
+					return this.props.options[i].isAllowCustomValue;
+				}
+			}
+		} else {
+			return false;
+		}
+	}
+
 	_removeTokenForValue = value => {
 		var index = this.state.selected.indexOf(value);
 		if (index == -1) {
@@ -223,6 +238,7 @@ export default class OTokenizer extends Tokenizer {
 			<Typeahead
 				ref={ref => (this.typeaheadRef = ref)}
 				isAllowOperator={this.props.isAllowOperator}
+				fuzzySearchEmptyMessage={this.props.fuzzySearchEmptyMessage}
 				onElementFocused={this.onElementFocused}
 				isElemenFocused={this.state.focused}
 				className={classList}
@@ -231,9 +247,11 @@ export default class OTokenizer extends Tokenizer {
 				options={this._getOptionsForTypeahead()}
 				header={this._getHeader()}
 				datatype={this._getInputType()}
+				isAllowCustomValue={this._getAllowCustomValue()}
 				defaultValue={this.props.defaultValue}
 				onOptionSelected={this._addTokenForValue}
 				onKeyDown={this._onKeyDown}
+				fromTokenizer={true}
 			/>
 		);
 	}

@@ -42,6 +42,60 @@
 	border-bottom-color: $color_gallery_approx;
 }
 
+.typeahead {
+	input {
+		width: calc(100% - 20px);
+		padding: 10px;
+		font-size: 14px;
+	}
+	ul.typeahead-selector {
+		z-index: 100;
+		position: absolute;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		background-color: $color_desert_storm_approx;
+		border: 1px solid $color_log_cabin_approx;
+		width: 200px;
+		max-height: 200px;
+		overflow-y: auto;
+		//Instead of the line below you could use @include box-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+		box-shadow: 5px 5px 5px $color_suva_gray_approx;
+		li {
+			z-index: 9999;
+			border-bottom: 1px solid $color_celeste_approx;
+			background-image: linear-gradient($white, $color_gallery_approx);
+			&.header {
+				background-image: none;
+				background-color: $color_silver_chalice_approx;
+				color: $white;
+				font-weight: bold;
+				padding: 5px;
+				margin: 0px;
+			}
+			a {
+				color: $black;
+				padding: 5px;
+				width: calc(100% - 10px);
+				display: block;
+				&:hover {
+					@extend %extend_2;
+				}
+			}
+			&.disabled {
+				a:hover {
+					background: transparent;
+					color: gray;
+					cursor: not-allowed;
+				}
+			}
+		}
+		.hover a {
+			@extend %extend_2;
+		}
+	}
+}
+
 .filter-tokenizer {
 	width: calc(100% - 10px);
 	border: 1px solid $color_celeste_approx;
@@ -70,6 +124,7 @@
 	}
 	.typeahead {
 		overflow: hidden;
+		padding: 2px 0px;
 		display: block;
 		input {
 			outline: 0;
@@ -124,10 +179,17 @@
 			a {
 				color: $black;
 				padding: 5px;
-				width: 100%;
+				width: calc(100% - 10px);
 				display: block;
 				&:hover {
 					@extend %extend_2;
+				}
+			}
+			&.disabled {
+				a:hover {
+					background: transparent;
+					color: gray;
+					cursor: not-allowed;
 				}
 			}
 		}

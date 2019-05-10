@@ -36,13 +36,18 @@ export default class TypeaheadOption extends Component {
     return classNames(classes);
   }
 
-  _onClick = () => {
+  _onClick = e => {
+    e.stopPropagation();
+    if (this.props.disabled) {
+      return;
+    }
     return this.props.onClick();
   };
 
   render() {
     var classes = {
-      hover: this.props.hover
+      hover: this.props.hover,
+      disabled: this.props.disabled
     };
     classes[this.props.customClasses.listItem] = !!this.props.customClasses
       .listItem;
@@ -50,10 +55,7 @@ export default class TypeaheadOption extends Component {
 
     return (
       <li className={classList} onClick={this._onClick}>
-        <a
-          className={this._getClasses()}
-          ref={ref => (this.anchorRef = ref)}
-        >
+        <a className={this._getClasses()} ref={ref => (this.anchorRef = ref)}>
           {this.props.children}
         </a>
       </li>

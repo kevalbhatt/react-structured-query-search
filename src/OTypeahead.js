@@ -20,7 +20,7 @@ export default class OTypeahead extends Typeahead {
 								datatype: nextProps.datatype,
 								options: response.data,
 								visible: this.getOptionsForValue(
-									this.props.defaultValue,
+									null,
 									response.data
 								)
 							},
@@ -35,11 +35,13 @@ export default class OTypeahead extends Typeahead {
 				}
 			);
 		} else {
+			let inputRef = this.getInputRef(),
+				isValueEmpty = inputRef == undefined || inputRef.value == "";
 			this.setState({
 				options: nextProps.options,
 				header: nextProps.header,
 				datatype: nextProps.datatype,
-				visible: nextProps.options
+				visible: this.getOptionsForValue((isValueEmpty ? null: inputRef.value), nextProps.options)
 			});
 		}
 	}
@@ -60,7 +62,7 @@ export default class OTypeahead extends Typeahead {
 					>
 						<input
 							ref={ref => (this.entryRef = ref)}
-							type="text"
+							type={this.state.datatype == "number" ? 'number' :'text'}
 							placeholder={this.props.placeholder}
 							className={inputClassList}
 							defaultValue={this.state.entryValue}
