@@ -91,7 +91,10 @@ export default class App extends Component {
 	 * @return {[array]}
 	 */
 	getSectorOptions() {
-		return ["Finance", "Consumer Services"];
+		return [
+			{ sectorName: "Finance", id: 1 },
+			{ sectorName: "Consumer Services", id: 2 }
+		];
 	}
 
 	/**
@@ -99,51 +102,54 @@ export default class App extends Component {
 	 * @return {[array]}
 	 */
 	getIndustryOptions() {
-		return ["Business Services", "Other Specialty Stores"];
+		return [
+			{ name: "Business Services", id: 1 },
+			{ name: "Other Specialty Stores", id: 2 }
+		];
 	}
-    
-        render() {
-            return (<div className="container">
-		    <ReactStructuredQuerySearch
-			isAllowOperator={true}
-			options={[
-				{
-					category: "Symbol",
-					type: "textoptions",
-					operator: ["==", "!="],
-					options: this.getSymbolOptions
-				},
-				{
-					category: "Name",
-					type: "text",
-					operator: () => [
-						"==",
-						"!==",
-						"containes"
-					]
-				},
-				{ category: "Price", type: "number" },
-				{ category: "MarketCap", type: "number" },
-				{ category: "IPO", type: "date" },
-				{
-					category: "Sector",
-					type: "textoptions",
-					options: this.getSectorOptions
-				},
-				{
-					category: "Industry",
-					type: "textoptions",
-					options: this.getIndustryOptions
-				}
-			]}
-			customClasses={{
-				input: "filter-tokenizer-text-input",
-				results: "filter-tokenizer-list__container",
-				listItem: "filter-tokenizer-list__item"
-			}}
-		/>
-	    </div>);
-    }
+
+	render() {
+		return (
+			<div className="container">
+				<ReactStructuredQuerySearch
+					isAllowOperator={true}
+					options={[
+						{
+							category: "Symbol",
+							type: "textoptions",
+							operator: ["==", "!="],
+							options: this.getSymbolOptions
+						},
+						{
+							category: "Name",
+							type: "text",
+							operator: () => ["==", "!==", "containes"]
+						},
+						{ category: "Price", type: "number" },
+						{ category: "MarketCap", type: "number" },
+						{ category: "IPO", type: "date" },
+						{
+							category: "Sector",
+							type: "textoptions",
+							fuzzySearchKeyAttribute: "sectorName",
+							options: this.getSectorOptions
+						},
+						{
+							category: "Industry",
+							type: "textoptions",
+							options: this.getIndustryOptions
+						}
+					]}
+					onTokenAdd={val => console.log(val)}
+					customClasses={{
+						input: "filter-tokenizer-text-input",
+						results: "filter-tokenizer-list__container",
+						listItem: "filter-tokenizer-list__item"
+					}}
+				/>
+			</div>
+		);
+	}
 }
 ```
 
@@ -163,6 +169,7 @@ export default class App extends Component {
 | **allowDuplicateOptions** | `Boolean` | `false` | Switch between `unique/duplicate` values |
 | **loadingRender** | `function, Component` | `"Loading...."` | Show custom loader when values are retrieved using Ajax |
 | **fuzzySearchEmptyMessage** | `String` | `"No result found"` | This message is shown when dropdown doesn't have search value |
+| **renderSearchItem** | `function` || Allow you to render custome value |
 
 
 
@@ -175,6 +182,7 @@ export default class App extends Component {
 | **operator** | `Array, function` | | required, if  `isAllowOperator` prop is set to `true`| If this attribute is added then it would ignore the type check as described in `type` parameter and it would accept what you have passed|
 | **options** | `Array, function, Promise` | |`required, if type="textoptions"` | Get the value according to selected category |
 | **isAllowCustomValue** | `Boolean` |`false`|| <div> When this parameter is set to `true`, it allows you to send multiple custom values for `type=textoptions`</div> |
+| **fuzzySearchKeyAttribute** | `String` |`name`|| By default fuzzy search look for `name` attribute inside options(values) but you can change that using `fuzzySearchKeyAttribute`|
 
 
 ---

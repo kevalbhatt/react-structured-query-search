@@ -36,7 +36,10 @@ export default class App extends Component {
 	 * @return {[array]}
 	 */
 	getSectorOptions() {
-		return ["Finance", "Consumer Services"];
+		return [
+			{ sectorName: "Finance", id: 1 },
+			{ sectorName: "Consumer Services", id: 2 }
+		];
 	}
 
 	/**
@@ -44,14 +47,16 @@ export default class App extends Component {
 	 * @return {[array]}
 	 */
 	getIndustryOptions() {
-		return ["Business Services", "Other Specialty Stores"];
+		return [
+			{ name: "Business Services", id: 1 },
+			{ name: "Other Specialty Stores", id: 2 }
+		];
 	}
 
 	render() {
 		return (
 			<div className="container">
 				<ReactStructuredQuerySearch
-					isAllowOperator={true}
 					options={[
 						{
 							category: "Symbol",
@@ -70,6 +75,7 @@ export default class App extends Component {
 						{
 							category: "Sector",
 							type: "textoptions",
+							fuzzySearchKeyAttribute: "sectorName",
 							options: this.getSectorOptions
 						},
 						{
@@ -78,6 +84,7 @@ export default class App extends Component {
 							options: this.getIndustryOptions
 						}
 					]}
+					onTokenAdd={val => console.log(val)}
 					customClasses={{
 						input: "filter-tokenizer-text-input",
 						results: "filter-tokenizer-list__container",

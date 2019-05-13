@@ -92,6 +92,19 @@ export default class TypeaheadSelector extends Component {
   //   }
   // };
 
+  getSearchItem(item) {
+    if (this.props.renderSearchItem) {
+      this.props.renderSearchItem(item);
+    } else {
+      if (typeof item == "object") {
+        let attr = this.props.fuzzySearchKeyAttribute;
+        return item[attr] ? item[attr] : item["string"];
+      } else if (typeof item == "string") {
+        return item;
+      }
+    }
+  }
+
   render() {
     var classes = {
       "typeahead-selector": true
@@ -103,17 +116,18 @@ export default class TypeaheadSelector extends Component {
     this.selectedItemRef = null;
     var results = this.props.options.map(function(result, i) {
       let elementSelected = this.state.selectionIndex === i,
-        disabledElement = result == this.props.fuzzySearchEmptyMessage;
+        disabledElement = result == this.props.fuzzySearchEmptyMessage,
+        item = this.getSearchItem(result);
       return (
         <TypeaheadOption
           isAllowOperator={this.props.isAllowOperator}
-          key={result}
+          key={item}
           disabled={disabledElement}
           hover={disabledElement ? false : elementSelected}
           customClasses={this.props.customClasses}
           onClick={this._onClick.bind(this, result)}
         >
-          {result}
+          {item}
         </TypeaheadOption>
       );
     }, this);

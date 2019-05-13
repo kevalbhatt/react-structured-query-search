@@ -5,6 +5,7 @@ import { Typeahead } from "./lib/react-structured-filter/react-typeahead/react-t
 // Override the Tokenizer
 export default class OTypeahead extends Typeahead {
 	componentWillReceiveProps(nextProps) {
+		this.fuzzySearchKeyAttribute = nextProps.fuzzySearchKeyAttribute || this.props.fuzzySearchKeyAttribute;
 		if (nextProps.options instanceof Promise) {
 			this.setState(
 				{
@@ -41,8 +42,29 @@ export default class OTypeahead extends Typeahead {
 				options: nextProps.options,
 				header: nextProps.header,
 				datatype: nextProps.datatype,
-				visible: this.getOptionsForValue((isValueEmpty ? null: inputRef.value), nextProps.options)
+				visible: this.getOptionsForValue(
+					isValueEmpty ? null : inputRef.value,
+					nextProps.options
+				)
 			});
+		}
+	}
+
+	_onOptionSelected(option) {
+		if (option !== this.props.fuzzySearchEmptyMessage) {
+			var nEntry = this.entryRef;
+			nEntry.focus();
+			if (typeof option == "object") {
+				nEntry.value = option[this.props.fuzzySearchKeyAttribute];
+			} else {
+				nEntry.value = option;
+			}
+			this.setState({
+				visible: this.getOptionsForValue(option, this.state.options),
+				selection: option,
+				entryValue: option
+			});
+			this.props.onOptionSelected(option);
 		}
 	}
 
@@ -62,7 +84,11 @@ export default class OTypeahead extends Typeahead {
 					>
 						<input
 							ref={ref => (this.entryRef = ref)}
-							type={this.state.datatype == "number" ? 'number' :'text'}
+							type={
+								this.state.datatype == "number"
+									? "number"
+									: "text"
+							}
 							placeholder={this.props.placeholder}
 							className={inputClassList}
 							defaultValue={this.state.entryValue}

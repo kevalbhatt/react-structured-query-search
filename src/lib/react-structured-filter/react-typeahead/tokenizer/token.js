@@ -29,11 +29,20 @@ export default class Token extends Component {
     );
   }
 
+  getTokenValue() {
+    let value = this.props.children["value"];
+    if (value && typeof value == "object") {
+      return value[this.props.fuzzySearchKeyAttribute];
+    } else {
+      return value;
+    }
+  }
+
   render() {
     return (
       <div className="typeahead-token">
         {this.props.children["category"]} {this.props.children["operator"]} "
-        {this.props.children["value"]}"{this._makeCloseButton()}
+        {this.getTokenValue()}"{this._makeCloseButton()}
       </div>
     );
   }

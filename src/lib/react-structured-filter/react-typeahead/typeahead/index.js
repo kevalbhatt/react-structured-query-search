@@ -34,6 +34,9 @@ export default class Typeahead extends Component {
     customClasses: {},
     defaultValue: "",
     placeholder: "",
+    fuzzySearchEmptyMessage: "No result found",
+    fuzzySearchKeyAttribute: "name",
+    fuzzySearchIdAttribute: "id",
     onKeyDown: function(event) {
       return;
     },
@@ -63,9 +66,11 @@ export default class Typeahead extends Component {
       selection: null,
       focused: false
     };
+    this.fuzzySearchKeyAttribute = this.props.fuzzySearchKeyAttribute;
   }
 
   componentWillReceiveProps(nextProps) {
+    this.fuzzySearchKeyAttribute = nextProps.fuzzySearchKeyAttribute || this.props.fuzzySearchKeyAttribute;
     this.setState({
       options: nextProps.options,
       header: nextProps.header,
@@ -78,8 +83,22 @@ export default class Typeahead extends Component {
     if (value == null) {
       value = this.props.defaultValue;
     }
-    var result = fuzzy.filter(value, options).map(function(res) {
-      return res.string;
+    let extract = null;
+    if (options && options.length && typeof options[0] == "object") {
+      extract = {
+        pre: "<",
+        post: ">",
+        extract: obj => {
+          let val = obj[this.fuzzySearchKeyAttribute];
+          if (!val) {
+            throw ("fuzzySearchKeyAttribute is missing inside options(values) list")
+          }
+          return val;
+        }
+      };
+    }
+    var result = fuzzy.filter(value, options, extract).map(function(res) {
+      return res.original;
     });
 
     if (this.props.maxVisible) {
@@ -129,7 +148,10 @@ export default class Typeahead extends Component {
         fromTokenizer={this.props.fromTokenizer}
         options={this.state.visible}
         header={this.state.header}
+        fuzzySearchKeyAttribute={this.fuzzySearchKeyAttribute}
+        fuzzySearchIdAttribute={this.props.fuzzySearchIdAttribute}
         fuzzySearchEmptyMessage={this.props.fuzzySearchEmptyMessage}
+        renderSearchItem={this.props.renderSearchItem}
         onOptionSelected={this._onOptionSelected.bind(this)}
         customClasses={this.props.customClasses}
       />
@@ -137,17 +159,15 @@ export default class Typeahead extends Component {
   }
 
   _onOptionSelected(option) {
-    if (option !== this.props.fuzzySearchEmptyMessage) {
-      var nEntry = this.entryRef;
-      nEntry.focus();
-      nEntry.value = option;
-      this.setState({
-        visible: this.getOptionsForValue(option, this.state.options),
-        selection: option,
-        entryValue: option
-      });
-      this.props.onOptionSelected(option);
-    }
+    var nEntry = this.entryRef;
+    nEntry.focus();
+    nEntry.value = option;
+    this.setState({
+      visible: this.getOptionsForValue(option, this.state.options),
+      selection: option,
+      entryValue: option
+    });
+    this.props.onOptionSelected(option);
   }
 
   _onTextEntryUpdated = () => {
@@ -177,9 +197,9 @@ export default class Typeahead extends Component {
   };
 
   _onTab = event => {
-    var option = this.selRef.state.selection
-      ? this.selRef.state.selection
-      : this.state.visible[0];
+    var option = this.selRef.state.selection ?
+      this.selRef.state.selection :
+      this.state.visible[0];
     this._onOptionSelected(option);
   };
 

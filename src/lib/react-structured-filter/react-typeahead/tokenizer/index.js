@@ -46,8 +46,6 @@ export default class TypeaheadTokenizer extends Component {
     };
   }
 
-  // TODO: Support initialized tokens
-  //
   _renderTokens() {
     if (this.props.renderTokens) {
       return this.props.renderTokens(this.state.selected);
@@ -61,12 +59,17 @@ export default class TypeaheadTokenizer extends Component {
       let mykey =
         selected.category +
         (this.props.isAllowOperator ? selected.operator : "") +
-        selected.value;
-
+        (typeof selected.value == "string"
+          ? selected.value
+          : selected.value[this.props.fuzzySearchKeyAttribute]);
       return (
         <Token
           key={mykey}
           className={classList}
+          fuzzySearchKeyAttribute={this._getFuzzySearchKeyAttribute({
+            category: selected.category
+          })}
+          fuzzySearchIdAttribute={this.props.fuzzySearchIdAttribute}
           onRemoveToken={this._removeTokenForValue}
         >
           {selected}
@@ -229,10 +232,6 @@ export default class TypeaheadTokenizer extends Component {
     return (
       <Typeahead
         ref={ref => (this.typeaheadRef = ref)}
-        isAllowOperator={this.props.isAllowOperator}
-        onElementFocused={this.onElementFocused}
-        fuzzySearchEmptyMessage={this.props.fuzzySearchEmptyMessage}
-        isElemenFocused={this.state.focused}
         className={classList}
         placeholder={this.props.placeholder}
         customClasses={this.props.customClasses}

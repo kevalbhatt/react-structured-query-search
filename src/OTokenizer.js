@@ -11,7 +11,9 @@ export default class OTokenizer extends Tokenizer {
 	}
 
 	componentWillUnmount() {
-		document.removeListener("click", this.handleClickOutside);
+		if (document && document.removeListener) {
+			document.removeListener("click", this.handleClickOutside);
+		}
 	}
 
 	handleClickOutside = e => {
@@ -175,6 +177,13 @@ export default class OTokenizer extends Tokenizer {
 			return false;
 		}
 	}
+	_getFuzzySearchKeyAttribute({ category }) {
+		for (var i = 0; i < this.props.options.length; i++) {
+			if (this.props.options[i].category == category) {
+				return this.props.options[i].fuzzySearchKeyAttribute || "name";
+			}
+		}
+	}
 
 	_removeTokenForValue = value => {
 		var index = this.state.selected.indexOf(value);
@@ -238,9 +247,13 @@ export default class OTokenizer extends Tokenizer {
 			<Typeahead
 				ref={ref => (this.typeaheadRef = ref)}
 				isAllowOperator={this.props.isAllowOperator}
-				fuzzySearchEmptyMessage={this.props.fuzzySearchEmptyMessage}
 				onElementFocused={this.onElementFocused}
 				isElemenFocused={this.state.focused}
+				fuzzySearchEmptyMessage={this.props.fuzzySearchEmptyMessage}
+				fuzzySearchKeyAttribute={this._getFuzzySearchKeyAttribute({
+					category: this.state.category
+				})}
+				renderSearchItem={this.props.renderSearchItem}
 				className={classList}
 				placeholder={this.props.placeholder}
 				customClasses={this.props.customClasses}
