@@ -42,6 +42,7 @@ export default class TypeaheadTokenizer extends Component {
       selected: this.props.defaultSelected || [],
       category: "",
       operator: "",
+      options: this.props.options,
       focused: false
     };
   }
@@ -82,8 +83,8 @@ export default class TypeaheadTokenizer extends Component {
   _getOptionsForTypeahead() {
     if (this.state.category == "") {
       var categories = [];
-      for (var i = 0; i < this.props.options.length; i++) {
-        categories.push(this.props.options[i].category);
+      for (var i = 0; i < this.state.options.length; i++) {
+        categories.push(this.state.options[i].category);
       }
       return categories;
     } else if (this.state.operator == "") {
@@ -104,7 +105,7 @@ export default class TypeaheadTokenizer extends Component {
       else return options();
     }
 
-    return this.props.options;
+    return this.state.options;
   }
 
   _getHeader() {
@@ -116,21 +117,21 @@ export default class TypeaheadTokenizer extends Component {
       return "Value";
     }
 
-    return this.props.options;
+    return this.state.options;
   }
 
   _getCategoryType() {
-    for (var i = 0; i < this.props.options.length; i++) {
-      if (this.props.options[i].category == this.state.category) {
-        return this.props.options[i].type;
+    for (var i = 0; i < this.state.options.length; i++) {
+      if (this.state.options[i].category == this.state.category) {
+        return this.state.options[i].type;
       }
     }
   }
 
   _getCategoryOptions() {
-    for (var i = 0; i < this.props.options.length; i++) {
-      if (this.props.options[i].category == this.state.category) {
-        return this.props.options[i].options;
+    for (var i = 0; i < this.state.options.length; i++) {
+      if (this.state.options[i].category == this.state.category) {
+        return this.state.options[i].options;
       }
     }
   }

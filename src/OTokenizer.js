@@ -34,9 +34,9 @@ export default class OTokenizer extends Tokenizer {
 	};
 
 	_getCategoryOperator() {
-		for (var i = 0; i < this.props.options.length; i++) {
-			if (this.props.options[i].category == this.state.category) {
-				return this.props.options[i].operator;
+		for (var i = 0; i < this.state.options.length; i++) {
+			if (this.state.options[i].category == this.state.category) {
+				return this.state.options[i].operator;
 			}
 		}
 	}
@@ -44,9 +44,9 @@ export default class OTokenizer extends Tokenizer {
 	_getOptionsForTypeahead() {
 		if (this.state.category == "") {
 			var categories = [];
-			for (var i = 0; i < this.props.options.length; i++) {
-				let category = this.props.options[i].category,
-					isAllowCustomValue = this.props.options[i]
+			for (var i = 0; i < this.state.options.length; i++) {
+				let category = this.state.options[i].category,
+					isAllowCustomValue = this.state.options[i]
 						.isAllowCustomValue;
 
 				if (
@@ -107,7 +107,7 @@ export default class OTokenizer extends Tokenizer {
 				}
 			}
 		}
-		return this.props.options;
+		return this.state.options;
 	}
 
 	filterOptionsValue({ options }) {
@@ -163,14 +163,14 @@ export default class OTokenizer extends Tokenizer {
 		} else {
 			return this.props.valueHeader || "Value";
 		}
-		return this.props.options;
+		return this.state.options;
 	}
 
 	_getAllowCustomValue() {
 		if (this.state.category) {
-			for (var i = 0; i < this.props.options.length; i++) {
-				if (this.props.options[i].category == this.state.category) {
-					return this.props.options[i].isAllowCustomValue;
+			for (var i = 0; i < this.state.options.length; i++) {
+				if (this.state.options[i].category == this.state.category) {
+					return this.state.options[i].isAllowCustomValue;
 				}
 			}
 		} else {
@@ -178,9 +178,9 @@ export default class OTokenizer extends Tokenizer {
 		}
 	}
 	_getFuzzySearchKeyAttribute({ category }) {
-		for (var i = 0; i < this.props.options.length; i++) {
-			if (this.props.options[i].category == category) {
-				return this.props.options[i].fuzzySearchKeyAttribute || "name";
+		for (var i = 0; i < this.state.options.length; i++) {
+			if (this.state.options[i].category == category) {
+				return this.state.options[i].fuzzySearchKeyAttribute || "name";
 			}
 		}
 	}
@@ -198,7 +198,18 @@ export default class OTokenizer extends Tokenizer {
 		) {
 			this.skipCategorySet.delete(removedObj.category);
 		}
-		this.setState({ selected: this.state.selected });
+		let stateObj = { selected: this.state.selected };
+		if (this.props.updateOptions) {
+			let newOptions = this.props.updateOptions({
+				updatedValues: this.state.selected,
+				removedValue: removedObj,
+				addedValue: null
+			});
+			if (newOptions && newOptions.length) {
+				Object.assign(stateObj, { options: newOptions });
+			}
+		}
+		this.setState(stateObj);
 		this.props.onTokenRemove(this.state.selected);
 
 		return;
@@ -236,6 +247,16 @@ export default class OTokenizer extends Tokenizer {
 		}
 
 		this.typeaheadRef.setEntryText("");
+		if (this.props.updateOptions) {
+			let newOptions = this.props.updateOptions({
+				updatedValues: this.state.selected,
+				addedValue: value,
+				removedValue: null
+			});
+			if (newOptions && newOptions.length) {
+				Object.assign(stateObj, { options: newOptions });
+			}
+		}
 		this.setState(stateObj, () =>
 			this.props.onTokenAdd(this.state.selected)
 		);

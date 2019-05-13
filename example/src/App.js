@@ -8,6 +8,33 @@ export default class App extends Component {
 		this.state = {
 			SymbolData: []
 		};
+		this.options = [
+			{
+				category: "Symbol",
+				type: "textoptions",
+				operator: ["==", "!="],
+				options: this.getSymbolOptions
+			},
+			{
+				category: "Name",
+				type: "text",
+				operator: () => ["==", "!==", "containes"]
+			},
+			{ category: "Price", type: "number" },
+			{ category: "MarketCap", type: "number" },
+			{ category: "IPO", type: "date" },
+			{
+				category: "Sector",
+				type: "textoptions",
+				fuzzySearchKeyAttribute: "sectorName",
+				options: this.getSectorOptions
+			},
+			{
+				category: "Industry",
+				type: "textoptions",
+				options: this.getIndustryOptions
+			}
+		];
 	}
 
 	/**
@@ -57,33 +84,20 @@ export default class App extends Component {
 		return (
 			<div className="container">
 				<ReactStructuredQuerySearch
-					options={[
-						{
-							category: "Symbol",
-							type: "textoptions",
-							operator: ["==", "!="],
-							options: this.getSymbolOptions
-						},
-						{
-							category: "Name",
-							type: "text",
-							operator: () => ["==", "!==", "containes"]
-						},
-						{ category: "Price", type: "number" },
-						{ category: "MarketCap", type: "number" },
-						{ category: "IPO", type: "date" },
-						{
-							category: "Sector",
-							type: "textoptions",
-							fuzzySearchKeyAttribute: "sectorName",
-							options: this.getSectorOptions
-						},
-						{
-							category: "Industry",
-							type: "textoptions",
-							options: this.getIndustryOptions
+					options={this.options}
+					updateOptions={({ updatedValues, addedValue }) => {
+						if (
+							addedValue &&
+							addedValue.category === "Symbol" &&
+							addedValue.value === "TFSC"
+						) {
+							this.options.push({
+								category: "New Category",
+								type: "text"
+							});
+							return this.options;
 						}
-					]}
+					}}
 					onTokenAdd={val => console.log(val)}
 					customClasses={{
 						input: "filter-tokenizer-text-input",
