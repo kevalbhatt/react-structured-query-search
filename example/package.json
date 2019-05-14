@@ -1,7 +1,7 @@
 {
   "name": "react-structured-query-search-example",
   "homepage": "https://kevalbhatt.github.io/react-structured-query-search",
-  "version": "0.0.0",
+  "version": "1.0.0-alpha.0",
   "license": "MIT",
   "private": true,
   "dependencies": {
