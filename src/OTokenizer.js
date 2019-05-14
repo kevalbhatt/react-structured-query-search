@@ -21,11 +21,17 @@ export default class OTokenizer extends Tokenizer {
 			let node = ReactDOM.findDOMNode(this);
 			if (
 				(node && node.contains(e.target)) ||
-				(e.target && e.target.className == "typeahead-option")
+				((e.target && e.target.className == "typeahead-option") ||
+					e.target.className == "typeahead-token-close")
 			) {
 				return;
 			}
-			this.setState({ focused: false });
+			if (
+				this.state.focused === true &&
+				!this.typeaheadRef.isOptionsLoading()
+			) {
+				this.setState({ focused: false });
+			}
 		}
 	};
 
@@ -45,9 +51,16 @@ export default class OTokenizer extends Tokenizer {
 		if (this.state.category == "") {
 			var categories = [];
 			for (var i = 0; i < this.state.options.length; i++) {
-				let category = this.state.options[i].category,
-					isAllowCustomValue = this.state.options[i]
-						.isAllowCustomValue;
+				let options = this.state.options[i],
+					category = options.category,
+					isAllowCustomValue =
+						options.isAllowCustomValue == undefined
+							? false
+							: options.isAllowCustomValue,
+					isAllowDuplicateCategories =
+						options.isAllowDuplicateCategories == undefined
+							? true
+							: options.isAllowDuplicateCategories;
 
 				if (
 					isAllowCustomValue == false &&
@@ -56,7 +69,7 @@ export default class OTokenizer extends Tokenizer {
 				) {
 					continue;
 				}
-				if (this.props.allowDuplicateCategories == false) {
+				if (isAllowDuplicateCategories == false) {
 					let foundCategory = this.state.selected.find(function(obj) {
 						return obj.category == category;
 					});
@@ -112,14 +125,14 @@ export default class OTokenizer extends Tokenizer {
 
 	filterOptionsValue({ options }) {
 		if (
-			this.props.allowDuplicateOptions == false &&
+			this._getAllowDuplicateOptions() == false &&
 			this.state.selected.length &&
 			this.state.category != ""
 		) {
 			let optionsList = [];
 			if (options && options.length) {
 				var listToFindOptionOnIt = [];
-				if (this.props.allowDuplicateCategories) {
+				if (this._getAllowDuplicateCategories()) {
 					listToFindOptionOnIt = this.state.selected.filter(o => {
 						return o.category == this.state.category;
 					});
@@ -128,9 +141,19 @@ export default class OTokenizer extends Tokenizer {
 						return o.category == this.state.category;
 					});
 				}
+				let fuzzySearchKeyAttribute = this._getFuzzySearchKeyAttribute({
+					category: this.state.category
+				});
 				options.forEach(val => {
 					let foundOption = listToFindOptionOnIt.find(o => {
-						return o.value == val;
+						if (typeof val === "object") {
+							return (
+								o.value[fuzzySearchKeyAttribute] ==
+								val[fuzzySearchKeyAttribute]
+							);
+						} else {
+							return o.value == val;
+						}
 					});
 					if (!foundOption) {
 						optionsList.push(val);
@@ -166,17 +189,46 @@ export default class OTokenizer extends Tokenizer {
 		return this.state.options;
 	}
 
-	_getAllowCustomValue() {
+	_getAllowDuplicateCategories() {
 		if (this.state.category) {
 			for (var i = 0; i < this.state.options.length; i++) {
 				if (this.state.options[i].category == this.state.category) {
-					return this.state.options[i].isAllowCustomValue;
+					return (
+						this.state.options[i].isAllowDuplicateCategories || true
+					);
 				}
 			}
 		} else {
 			return false;
 		}
 	}
+
+	_getAllowDuplicateOptions() {
+		if (this.state.category) {
+			for (var i = 0; i < this.state.options.length; i++) {
+				if (this.state.options[i].category == this.state.category) {
+					return (
+						this.state.options[i].isAllowDuplicateOptions || false
+					);
+				}
+			}
+		} else {
+			return false;
+		}
+	}
+
+	_getAllowCustomValue() {
+		if (this.state.category) {
+			for (var i = 0; i < this.state.options.length; i++) {
+				if (this.state.options[i].category == this.state.category) {
+					return this.state.options[i].isAllowCustomValue || false;
+				}
+			}
+		} else {
+			return false;
+		}
+	}
+
 	_getFuzzySearchKeyAttribute({ category }) {
 		for (var i = 0; i < this.state.options.length; i++) {
 			if (this.state.options[i].category == category) {
@@ -184,6 +236,20 @@ export default class OTokenizer extends Tokenizer {
 			}
 		}
 	}
+
+	_focusInput() {
+		if (this.typeaheadRef) {
+			var entry = this.typeaheadRef.getInputRef();
+			if (entry) {
+				entry.focus();
+			}
+		}
+	}
+
+	onClickOfDivFocusInput = e => {
+		e.stopPropagation();
+		this._focusInput();
+	};
 
 	_removeTokenForValue = value => {
 		var index = this.state.selected.indexOf(value);
@@ -209,8 +275,9 @@ export default class OTokenizer extends Tokenizer {
 				Object.assign(stateObj, { options: newOptions });
 			}
 		}
-		this.setState(stateObj);
-		this.props.onTokenRemove(this.state.selected);
+		this.setState(stateObj, () => {
+			this.props.onTokenRemove(this.state.selected);
+		});
 
 		return;
 	};

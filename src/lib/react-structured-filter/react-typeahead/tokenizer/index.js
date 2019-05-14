@@ -28,8 +28,6 @@ export default class TypeaheadTokenizer extends Component {
     customClasses: {},
     defaultValue: "",
     placeholder: "",
-    allowDuplicateOptions: false,
-    allowDuplicateCategories: true,
     fuzzySearchEmptyMessage: "No result found",
     onTokenAdd() {},
     onTokenRemove() {}
@@ -56,20 +54,23 @@ export default class TypeaheadTokenizer extends Component {
       .token;
     var classList = classNames(tokenClasses);
 
-    var result = this.state.selected.map(selected => {
+    var result = this.state.selected.map((selected, index) => {
+      let fuzzySearchKeyAttribute = this._getFuzzySearchKeyAttribute({
+        category: selected.category
+      });
       let mykey =
         selected.category +
         (this.props.isAllowOperator ? selected.operator : "") +
         (typeof selected.value == "string"
           ? selected.value
-          : selected.value[this.props.fuzzySearchKeyAttribute]);
+          : selected.value[fuzzySearchKeyAttribute]) +
+        index;
       return (
         <Token
           key={mykey}
           className={classList}
-          fuzzySearchKeyAttribute={this._getFuzzySearchKeyAttribute({
-            category: selected.category
-          })}
+          renderTokenItem={this.props.renderTokenItem}
+          fuzzySearchKeyAttribute={fuzzySearchKeyAttribute}
           fuzzySearchIdAttribute={this.props.fuzzySearchIdAttribute}
           onRemoveToken={this._removeTokenForValue}
         >
@@ -212,22 +213,15 @@ export default class TypeaheadTokenizer extends Component {
    * Returns the data type the input should use ("date" or "text")
    */
   _getInputType() {
-    if (this.state.category != "" && this.state.operator != "") {
+    if (
+      this.state.category != "" &&
+      (this.props.isAllowOperator ? this.state.operator != "" : true)
+    ) {
       return this._getCategoryType();
     } else {
       return "text";
     }
   }
-
-  onClickOfDivFocusInput = e => {
-    e.stopPropagation();
-    if (this.typeaheadRef) {
-      var entry = this.typeaheadRef.getInputRef();
-      if (entry) {
-        entry.focus();
-      }
-    }
-  };
 
   _getTypeahed({ classList }) {
     return (

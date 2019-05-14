@@ -1,14 +1,5 @@
 @import "./_variable.scss";
 
-.clearfix {
-	overflow: auto;
-	&:after {
-		content: "";
-		clear: both;
-		display: table;
-	}
-}
-
 //@extend-elements
 //original selectors
 //.filter-input-group .filter-category, .filter-input-group .filter-operator, .filter-input-group .filter-value

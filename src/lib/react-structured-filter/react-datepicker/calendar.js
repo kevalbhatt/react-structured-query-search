@@ -3,7 +3,6 @@ import React, { Component } from "react";
 import Day from "./day";
 import DateUtil from "./util/date";
 import moment from "moment";
-import onClickOutside from "react-onclickoutside";
 
 class Calendar extends Component {
   constructor(props) {
@@ -13,6 +12,7 @@ class Calendar extends Component {
     };
   }
 
+  // TODO Hide Calendar
   handleClickOutside = () => {
     this.props.hideCalendar();
   };
@@ -98,4 +98,4 @@ class Calendar extends Component {
   }
 }
 
-export default onClickOutside(Calendar);
+export default Calendar;

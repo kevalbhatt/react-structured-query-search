@@ -5,7 +5,9 @@ import { Typeahead } from "./lib/react-structured-filter/react-typeahead/react-t
 // Override the Tokenizer
 export default class OTypeahead extends Typeahead {
 	componentWillReceiveProps(nextProps) {
-		this.fuzzySearchKeyAttribute = nextProps.fuzzySearchKeyAttribute || this.props.fuzzySearchKeyAttribute;
+		this.fuzzySearchKeyAttribute =
+			nextProps.fuzzySearchKeyAttribute ||
+			this.props.fuzzySearchKeyAttribute;
 		if (nextProps.options instanceof Promise) {
 			this.setState(
 				{
@@ -13,7 +15,7 @@ export default class OTypeahead extends Typeahead {
 				},
 				() => {
 					nextProps.options.then(response => {
-						this.props.onElementFocused({ focused: true });
+						//this.props.onElementFocused({ focused: true });
 						this.setState(
 							{
 								loadingOptions: false,
@@ -48,6 +50,10 @@ export default class OTypeahead extends Typeahead {
 				)
 			});
 		}
+	}
+
+	isOptionsLoading() {
+		return this.state.loadingOptions;
 	}
 
 	_onOptionSelected(option) {

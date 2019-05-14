@@ -38,11 +38,22 @@ export default class Token extends Component {
     }
   }
 
+  getTokenItem() {
+    if (this.props.renderTokenItem) {
+      return this.props.renderTokenItem(this.props);
+    } else {
+      let val = this.props.children;
+      return `${val["category"]} ${
+        val.operator == undefined ? "" : val.operator
+      } "${this.getTokenValue()}" `;
+    }
+  }
+
   render() {
     return (
       <div className="typeahead-token">
-        {this.props.children["category"]} {this.props.children["operator"]} "
-        {this.getTokenValue()}"{this._makeCloseButton()}
+        {this.getTokenItem()}
+        {this._makeCloseButton()}
       </div>
     );
   }

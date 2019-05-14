@@ -8,6 +8,7 @@ export default class App extends Component {
 		this.state = {
 			SymbolData: []
 		};
+		// NOTE: The operator will seen to UI only if props isAllowOperator={true}
 		this.options = [
 			{
 				category: "Symbol",
@@ -18,6 +19,7 @@ export default class App extends Component {
 			{
 				category: "Name",
 				type: "text",
+				isAllowDuplicateCategories: false,
 				operator: () => ["==", "!==", "containes"]
 			},
 			{ category: "Price", type: "number" },
@@ -27,11 +29,13 @@ export default class App extends Component {
 				category: "Sector",
 				type: "textoptions",
 				fuzzySearchKeyAttribute: "sectorName",
+				isAllowDuplicateOptions: true,
 				options: this.getSectorOptions
 			},
 			{
 				category: "Industry",
 				type: "textoptions",
+				isAllowCustomValue: false,
 				options: this.getIndustryOptions
 			}
 		];
@@ -80,11 +84,17 @@ export default class App extends Component {
 		];
 	}
 
+	getTokenItem(obj){
+		let val = obj.children;
+		return `${val["category"]}: val`
+	}
+
 	render() {
 		return (
 			<div className="container">
 				<ReactStructuredQuerySearch
 					options={this.options}
+					//renderTokenItem={this.getTokenItem}
 					updateOptions={({ updatedValues, addedValue }) => {
 						if (
 							addedValue &&

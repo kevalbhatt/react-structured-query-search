@@ -1,5 +1,4 @@
 # react-structured-query-search 🎉
-# :construction: (Work in progress) :construction:
 
 [![NPM](https://img.shields.io/npm/v/react-structured-query-search.svg)](https://www.npmjs.com/package/react-structured-query-search) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
@@ -14,6 +13,7 @@ You can use all the [react-typeahead](https://github.com/fmoo/react-typeahead), 
 ## 🎉🎊 New Features 🎊🎉
 
 * Ajax support to retrieve values.
+* Allows user to send values for Category in `Array<String>` or `Array<Object>`
 * Allows user to pass custom loader component.
 * Allows user to customize the header of dropdown (categories, operators, values).
 * Allows user to enable/disable operators in search.
@@ -21,6 +21,8 @@ You can use all the [react-typeahead](https://github.com/fmoo/react-typeahead), 
 * Switch between unique/duplicate categories (key).
 * Switch between unique/duplicate values
 * Allows user to send custom operators list.
+* Allows user to render custom tag(token) Component or the tag(token) Item.
+* Allows user to update Options(props) on runtime.
 
 
 
@@ -30,7 +32,7 @@ You can use all the [react-typeahead](https://github.com/fmoo/react-typeahead), 
 npm install --save react-structured-query-search
 ```
 
-## Usage ([Example Code](https://github.com/kevalbhatt/react-structured-query-search/blob/master/example/src/App.js))
+## Usage ([Example Code](https://github.com/kevalbhatt/react-structured-query-search/blob/master/example/src/App.js)) ([Demo](https://kevalbhatt.github.io/react-structured-query-search/))
 
 If you want to use `Tokenizer` then you either import as follows:
 
@@ -50,110 +52,6 @@ If you want to use `Typeahead` then you have to import as follows:
 import {Typeahead} from "react-structured-query-search";
 ```
 
-### Example
-
-```jsx
-import React, { Component } from "react";
-
-import ReactStructuredQuerySearch from "react-structured-query-search";
-
-export default class App extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			SymbolData: []
-		};
-	}
-
-	/**
-	 * [getSymbolOptions Get the values using Ajax call]
-	 * @return {[type]}
-	 */
-	getSymbolOptions = () => {
-		if (this.state.SymbolData.length === 0) {
-			return new Promise((resolve, reject) => {
-				setTimeout(() => {
-					this.setState(
-						{ SymbolData: ["TFSC", "PIL", "VNET"] },
-						() => {
-							return resolve(this.state.SymbolData);
-						}
-					);
-				}, 2000);
-			});
-		} else {
-			return this.state.SymbolData;
-		}
-	};
-
-	/**
-	 * [getSectorOptions Get the values for sector category]
-	 * @return {[array]}
-	 */
-	getSectorOptions() {
-		return [
-			{ sectorName: "Finance", id: 1 },
-			{ sectorName: "Consumer Services", id: 2 }
-		];
-	}
-
-	/**
-	 * [getIndustryOptions Get the values for Industry category]
-	 * @return {[array]}
-	 */
-	getIndustryOptions() {
-		return [
-			{ name: "Business Services", id: 1 },
-			{ name: "Other Specialty Stores", id: 2 }
-		];
-	}
-
-	render() {
-		return (
-			<div className="container">
-				<ReactStructuredQuerySearch
-					isAllowOperator={true}
-					options={[
-						{
-							category: "Symbol",
-							type: "textoptions",
-							operator: ["==", "!="],
-							options: this.getSymbolOptions
-						},
-						{
-							category: "Name",
-							type: "text",
-							operator: () => ["==", "!==", "containes"]
-						},
-						{ category: "Price", type: "number" },
-						{ category: "MarketCap", type: "number" },
-						{ category: "IPO", type: "date" },
-						{
-							category: "Sector",
-							type: "textoptions",
-							fuzzySearchKeyAttribute: "sectorName",
-							options: this.getSectorOptions
-						},
-						{
-							category: "Industry",
-							type: "textoptions",
-							options: this.getIndustryOptions
-						}
-					]}
-					onTokenAdd={val => console.log(val)}
-					customClasses={{
-						input: "filter-tokenizer-text-input",
-						results: "filter-tokenizer-list__container",
-						listItem: "filter-tokenizer-list__item"
-					}}
-				/>
-			</div>
-		);
-	}
-}
-```
-
-
 # API
 
 ### New flexible modification options
@@ -165,24 +63,26 @@ export default class App extends Component {
 | **operatorHeader** | `String, Component` | `"Operator"` | Allows user the change the header title of `Operator` |
 | **valueHeader** | `String, Component` | `"Value"` | Allows user the change the header title of `Value` |
 | **isAllowOperator** | `Boolean` | `false` | Allows user to `enable/disable` operators in search |
-| **allowDuplicateCategories** | `Boolean` | `true` | Switch between `unique/duplicate` categories (key) |
-| **allowDuplicateOptions** | `Boolean` | `false` | Switch between `unique/duplicate` values |
 | **loadingRender** | `function, Component` | `"Loading...."` | Show custom loader when values are retrieved using Ajax |
 | **fuzzySearchEmptyMessage** | `String` | `"No result found"` | This message is shown when dropdown doesn't have search value |
-| **renderSearchItem** | `function` || Allow you to render custome value |
-
+| **updateOptions** | `function` || Allows user to update the Options(props) at runtime, this function is called before `onTokenRemove` and `onTokenAdd` |
+| **renderTokens** | `function` || Allows user to render custome Token Component |
+| **renderTokenItem** | `function` || Allows user to render custome Token Item |
+| **renderSearchItem** | `function` || Allows user to render custome value |
 
 
 ### props.options (Data attributes)
 
 | Parameter | Type | Default | Required | Description|
 |:---------|:---- |:---- |:--------|:----------- | 
-| **category** | `String` ||`required` || Name of the first thing the user types.|
+| **category** | `String` ||`required` | Name of the first thing the user types.|
 | **type** | `String` |`text`||This can be one of the following:<ul><li><b>text</b>: Arbitrary text for the value. No autocomplete options.<ul><li>Operator choices will be: "==", "!=", "contains", "!contains".</li></ul> </li><li><b>textoptions</b>: You must additionally pass an <tt>options</tt> value</tt>. <ul><li>Operator choices will be: "==", "!=".</li></ul></li><li><b>number</b>: Arbitrary text for the value. No autocomplete options.<ul><li>Operator choices will be: "==", "!=", "&lt;", "&lt;=", "&gt;", "&gt;=".</li></ul> </li><li><b>date</b>: Shows a calendar and the input must be of the form "YYYY-MM-DD".<ul><li>Operator choices will be: "==", "!=", "&lt;", "&lt;=", "&gt;", "&gt;=".</li></ul></li></ul>|
 | **operator** | `Array, function` | | required, if  `isAllowOperator` prop is set to `true`| If this attribute is added then it would ignore the type check as described in `type` parameter and it would accept what you have passed|
 | **options** | `Array, function, Promise` | |`required, if type="textoptions"` | Get the value according to selected category |
 | **isAllowCustomValue** | `Boolean` |`false`|| <div> When this parameter is set to `true`, it allows you to send multiple custom values for `type=textoptions`</div> |
-| **fuzzySearchKeyAttribute** | `String` |`name`|| By default fuzzy search look for `name` attribute inside options(values) but you can change that using `fuzzySearchKeyAttribute`|
+| **isAllowDuplicateCategories** | `Boolean` | `true` || Switch between `unique/duplicate` categories (key) |
+| **isAllowDuplicateOptions** | `Boolean` | `false` ||Switch between `unique/duplicate` values |
+| **fuzzySearchKeyAttribute** | `String` |`name`|| If Category (options)values are `Array<Object>` then By default fuzzy search look for `name` attribute inside options(values) but you can change that attribut lookup key using `fuzzySearchKeyAttribute`|
 
 
 ---
