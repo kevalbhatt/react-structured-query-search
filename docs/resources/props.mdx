@@ -1,0 +1,180 @@
+---
+name: Props
+route: /Props
+---
+
+import { Playground } from "docz";
+import ReactStructuredQuerySearch from "react-structured-query-search";
+
+# Props
+
+## categoryHeader
+
+<Playground>
+	<ReactStructuredQuerySearch
+		categoryHeader="Custom Category"
+		options={[
+			{
+				category: "Country",
+				type: "textoptions",
+				options: ["India", "London"]
+			}
+		]}
+		onTokenAdd={val => console.log(val)}
+	/>
+</Playground>
+
+## operatorHeader
+
+<Playground>
+	<ReactStructuredQuerySearch
+		operatorHeader="Custom Operator"
+		options={[
+			{
+				category: "Country",
+				type: "textoptions",
+				options: ["India", "London"]
+			}
+		]}
+		onTokenAdd={val => console.log(val)}
+	/>
+</Playground>
+
+## valueHeader
+
+<Playground>
+
+    <ReactStructuredQuerySearch
+    	valueHeader="Custom Value"
+    	options={[{
+    			category: "Country",
+    			type: "textoptions",
+    			options: ["India","London"]
+    		}]}
+    	onTokenAdd={val => console.log(val)}
+    />
+
+</Playground>
+
+## isAllowOperator
+
+<Playground>
+
+    <ReactStructuredQuerySearch
+    	isAllowOperator={true}
+    	options={[{
+    			category: "Industry",
+    			type: "textoptions",
+    			options: ()=>{
+    				return ["Business Services", "Other Specialty Stores"]
+    			}
+    		}]}
+    	onTokenAdd={val => console.log(val)}
+    />
+
+</Playground>
+
+## loadingRender
+
+<Playground>
+
+    <ReactStructuredQuerySearch
+    	loadingRender={()=><span>"Custom Loading..."</span>}
+    	options={[{
+    			category: "Industry",
+    			type: "textoptions",
+    			options: ()=>{
+    				return ["Business Services", "Other Specialty Stores"]
+    			}
+    		}]}
+    	onTokenAdd={val => console.log(val)}
+    />
+
+</Playground>
+
+## fuzzySearchEmptyMessage
+
+<Playground>
+
+    <ReactStructuredQuerySearch
+    	fuzzySearchEmptyMessage="Custom Empty Message"
+    	options={[{
+    			category: "Industry",
+    			type: "textoptions",
+    			options: ()=>{
+    				return ["Business Services", "Other Specialty Stores"]
+    			}
+    		}]}
+    	onTokenAdd={val => console.log(val)}
+    />
+
+</Playground>
+
+## updateOptions
+
+<Playground>
+
+    <ReactStructuredQuerySearch
+    	updateOptions={()=>{}}
+    	options={[{
+    			category: "Industry",
+    			type: "textoptions",
+    			options: ()=>{
+    				return ["Business Services", "Other Specialty Stores"]
+    			}
+    		}]}
+    	onTokenAdd={val => console.log(val)}
+    />
+
+</Playground>
+
+## renderTokens
+
+<Playground>
+
+    <ReactStructuredQuerySearch
+    	options={[{
+    			category: "Industry",
+    			type: "textoptions",
+    			options: ()=>{
+    				return ["Business Services", "Other Specialty Stores"]
+    			}
+    		}]}
+    	onTokenAdd={val => console.log(val)}
+    />
+
+</Playground>
+
+## renderTokenItem
+
+<Playground>
+
+    <ReactStructuredQuerySearch
+    	options={[{
+    			category: "Industry",
+    			type: "textoptions",
+    			options: ()=>{
+    				return ["Business Services", "Other Specialty Stores"]
+    			}
+    		}]}
+    	onTokenAdd={val => console.log(val)}
+    />
+
+</Playground>
+
+## renderSearchItem
+
+<Playground>
+
+    <ReactStructuredQuerySearch
+    	options={[{
+    			category: "Industry",
+    			type: "textoptions",
+    			options: ()=>{
+    				return ["Business Services", "Other Specialty Stores"]
+    			}
+    		}]}
+    	onTokenAdd={val => console.log(val)}
+    />
+
+</Playground>

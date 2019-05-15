@@ -7,12 +7,13 @@ import Typeahead from "./OTypeahead";
 // Override the Tokenizer
 export default class OTokenizer extends Tokenizer {
 	componentDidMount() {
+		 this._ismounted = true;
 		document.addEventListener("click", this.handleClickOutside);
 	}
 
 	componentWillUnmount() {
-		if (document && document.removeListener) {
-			document.removeListener("click", this.handleClickOutside);
+		if (document && document.removeEventListener) {
+			document.removeEventListener("click", this.handleClickOutside);
 		}
 	}
 

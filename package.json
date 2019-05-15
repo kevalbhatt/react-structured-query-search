@@ -18,8 +18,8 @@
     "build": "rollup -c",
     "start": "rollup -c -w",
     "prepare": "npm run build",
-    "predeploy": "cd example && npm install && npm run build",
-    "deploy": "gh-pages -d example/build"
+    "predeploy": "cd docs && npm install && npm run build",
+    "deploy": "gh-pages -d docs/.docz/dist"
   },
   "peerDependencies": {
     "prop-types": "^15.5.4",
