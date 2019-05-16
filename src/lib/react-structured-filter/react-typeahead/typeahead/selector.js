@@ -121,7 +121,7 @@ export default class TypeaheadSelector extends Component {
       return (
         <TypeaheadOption
           isAllowOperator={this.props.isAllowOperator}
-          key={item}
+          key={`${item}-${i}`}
           disabled={disabledElement}
           hover={disabledElement ? false : elementSelected}
           customClasses={this.props.customClasses}
