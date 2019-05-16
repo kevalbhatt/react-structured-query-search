@@ -14,12 +14,17 @@ export default class TypeaheadTokenizer extends Component {
   static propTypes = {
     options: propTypes.array,
     customClasses: propTypes.object,
-    defaultSelected: propTypes.array,
+    defaultSelected: propTypes.oneOfType([propTypes.array, propTypes.func]),
     defaultValue: propTypes.string,
     placeholder: propTypes.string,
     onTokenRemove: propTypes.func,
     onTokenAdd: propTypes.func,
-    renderTokens: propTypes.func
+    renderTokens: propTypes.func,
+    fuzzySearchEmptyMessage: propTypes.string,
+    fuzzySearchKeyAttribute: propTypes.string,
+    isAllowSearchDropDownHeader: propTypes.bool,
+    isAllowOperator: propTypes.bool,
+    isAllowCustomValue: propTypes.bool
   };
 
   static defaultProps = {
@@ -37,7 +42,7 @@ export default class TypeaheadTokenizer extends Component {
     super(props);
     this.typeaheadRef = null;
     this.state = {
-      selected: this.props.defaultSelected || [],
+      selected: this.getDefaultSelectedValue(),
       category: "",
       operator: "",
       options: this.props.options,

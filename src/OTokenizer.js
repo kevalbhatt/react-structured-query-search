@@ -6,8 +6,17 @@ import Typeahead from "./OTypeahead";
 
 // Override the Tokenizer
 export default class OTokenizer extends Tokenizer {
+	getDefaultSelectedValue() {
+		let defaultValue = [];
+		if (typeof this.props.defaultSelected === "function") {
+			defaultValue = this.props.defaultSelected() || [];
+		} else {
+			defaultValue = this.props.defaultSelected;
+		}
+		return defaultValue;
+	}
+
 	componentDidMount() {
-		 this._ismounted = true;
 		document.addEventListener("click", this.handleClickOutside);
 	}
 
@@ -286,12 +295,14 @@ export default class OTokenizer extends Tokenizer {
 	_addTokenForValue = value => {
 		const { isAllowOperator } = this.props;
 		if (this.state.category == "") {
+			this.state.category = value;
 			this.setState({ category: value });
 			this.typeaheadRef.setEntryText("");
 			return;
 		}
 
 		if (isAllowOperator && this.state.operator == "") {
+			this.state.operator = value;
 			this.setState({ operator: value });
 			this.typeaheadRef.setEntryText("");
 			return;
@@ -342,6 +353,7 @@ export default class OTokenizer extends Tokenizer {
 				fuzzySearchKeyAttribute={this._getFuzzySearchKeyAttribute({
 					category: this.state.category
 				})}
+				isAllowSearchDropDownHeader={this.props.isAllowSearchDropDownHeader}
 				renderSearchItem={this.props.renderSearchItem}
 				className={classList}
 				placeholder={this.props.placeholder}

@@ -62,11 +62,13 @@ import {Typeahead} from "react-structured-query-search";
 | **categoryHeader** | `String, Component` | `"Category"` | Allows user the change the header title of `Category` |
 | **operatorHeader** | `String, Component` | `"Operator"` | Allows user the change the header title of `Operator` |
 | **valueHeader** | `String, Component` | `"Value"` | Allows user the change the header title of `Value` |
+| **isAllowSearchDropDownHeader** | `Boolean` | `"true"` | Allows user to `enable/disable` search drop-down header  |
 | **isAllowOperator** | `Boolean` | `false` | Allows user to `enable/disable` operators in search |
 | **loadingRender** | `function, Component` | `"Loading...."` | Show custom loader when values are retrieved using Ajax |
 | **fuzzySearchEmptyMessage** | `String` | `"No result found"` | This message is shown when dropdown doesn't have search value |
 | **updateOptions** | `function` || Allows user to update the Options(props) at runtime, this function is called before `onTokenRemove` and `onTokenAdd` |
-| **renderTokens** | `function` || Allows user to render custome Token Component |
+| **defaultSelected**| `function, Array` | `[]` | Allows user to initialize the search with selected values |
+| **renderTokens** | `function` || Allows user to render custome Token Component|
 | **renderTokenItem** | `function` || Allows user to render custome Token Item |
 | **renderSearchItem** | `function` || Allows user to render custome value |
 

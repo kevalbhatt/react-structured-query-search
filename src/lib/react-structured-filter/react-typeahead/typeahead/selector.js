@@ -133,7 +133,8 @@ export default class TypeaheadSelector extends Component {
     }, this);
     return (
       <ul className={classList} ref={ref => (this.listParentRef = ref)}>
-        {this.props.fromTokenizer === true ? (
+        {this.props.fromTokenizer === true &&
+        this.props.isAllowSearchDropDownHeader === true ? (
           <li className="header">{this.props.header}</li>
         ) : null}
         {results}

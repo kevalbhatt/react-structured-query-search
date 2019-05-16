@@ -20,6 +20,10 @@ export default class Typeahead extends Component {
     maxVisible: propTypes.number,
     options: propTypes.oneOfType([propTypes.array, propTypes.object]),
     header: propTypes.string,
+    isAllowSearchDropDownHeader: propTypes.bool,
+    fuzzySearchEmptyMessage: propTypes.string,
+    fuzzySearchKeyAttribute: propTypes.string,
+    fuzzySearchIdAttribute: propTypes.string,
     datatype: propTypes.string,
     defaultValue: propTypes.string,
     placeholder: propTypes.string,
@@ -34,6 +38,7 @@ export default class Typeahead extends Component {
     customClasses: {},
     defaultValue: "",
     placeholder: "",
+    isAllowSearchDropDownHeader: true,
     fuzzySearchEmptyMessage: "No result found",
     fuzzySearchKeyAttribute: "name",
     fuzzySearchIdAttribute: "id",
@@ -105,8 +110,11 @@ export default class Typeahead extends Component {
     if (this.props.maxVisible) {
       result = result.slice(0, this.props.maxVisible);
     }
-    
-    if (this.props.datatype == "textoptions" && !this.props.isAllowCustomValue) {
+
+    if (
+      this.props.datatype == "textoptions" &&
+      !this.props.isAllowCustomValue
+    ) {
       return result.length == 0 ? [this.props.fuzzySearchEmptyMessage] : result;
     } else {
       return result;
@@ -147,6 +155,7 @@ export default class Typeahead extends Component {
         fromTokenizer={this.props.fromTokenizer}
         options={this.state.visible}
         header={this.state.header}
+        isAllowSearchDropDownHeader={this.props.isAllowSearchDropDownHeader}
         fuzzySearchKeyAttribute={this.fuzzySearchKeyAttribute}
         fuzzySearchIdAttribute={this.props.fuzzySearchIdAttribute}
         fuzzySearchEmptyMessage={this.props.fuzzySearchEmptyMessage}
