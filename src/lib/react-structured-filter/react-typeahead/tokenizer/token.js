@@ -43,9 +43,7 @@ export default class Token extends Component {
       return this.props.renderTokenItem(this.props);
     } else {
       let val = this.props.children;
-      return `${val["category"]} ${
-        val.operator == undefined ? "" : val.operator
-      } "${this.getTokenValue()}" `;
+      return `${val["category"]} ${val.operator == undefined ? "" : val.operator} "${this.getTokenValue()}" `;
     }
   }
 

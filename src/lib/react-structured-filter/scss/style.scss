@@ -96,10 +96,21 @@
 	font-size: 90%;
 	display: table;
 	background-color: $white;
+	position: relative;
+	&.padding-for-clear-all {
+		width: calc(100% - 16px);
+		padding: 16px;
+	}
 	&:first-child {
 		padding-left: 0;
 		padding-top: 0;
 		padding-bottom: 0;
+	}
+	.clear-all {
+		position: absolute;
+		width: 13px;
+		right: 0;
+		top: calc(50% - 10px);
 	}
 	.input-group-addon {
 		border: 0;
@@ -131,10 +142,7 @@
 		display: block;
 		float: left;
 		background-color: $color_gray_nurse_approx;
-		background-image: linear-gradient(
-			$color_gallery_approx,
-			$color_bon_jour_approx
-		);
+		background-image: linear-gradient($color_gallery_approx, $color_bon_jour_approx);
 		border: 1px solid $color_celeste_approx;
 		//Instead of the line below you could use @include border-radius($radius, $vertical-radius)
 		border-radius: 2px;

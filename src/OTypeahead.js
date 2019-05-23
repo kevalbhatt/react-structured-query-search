@@ -5,9 +5,7 @@ import { Typeahead } from "./lib/react-structured-filter/react-typeahead/react-t
 // Override the Tokenizer
 export default class OTypeahead extends Typeahead {
 	componentWillReceiveProps(nextProps) {
-		this.fuzzySearchKeyAttribute =
-			nextProps.fuzzySearchKeyAttribute ||
-			this.props.fuzzySearchKeyAttribute;
+		this.fuzzySearchKeyAttribute = nextProps.fuzzySearchKeyAttribute || this.props.fuzzySearchKeyAttribute;
 		if (nextProps.options instanceof Promise) {
 			this.setState(
 				{
@@ -22,10 +20,7 @@ export default class OTypeahead extends Typeahead {
 								header: nextProps.header,
 								datatype: nextProps.datatype,
 								options: response.data,
-								visible: this.getOptionsForValue(
-									null,
-									response.data
-								)
+								visible: this.getOptionsForValue(null, response.data)
 							},
 							() => {
 								let inputRef = this.getInputRef();
@@ -44,10 +39,7 @@ export default class OTypeahead extends Typeahead {
 				options: nextProps.options,
 				header: nextProps.header,
 				datatype: nextProps.datatype,
-				visible: this.getOptionsForValue(
-					isValueEmpty ? null : inputRef.value,
-					nextProps.options
-				)
+				visible: this.getOptionsForValue(isValueEmpty ? null : inputRef.value, nextProps.options)
 			});
 		}
 	}
@@ -84,17 +76,10 @@ export default class OTypeahead extends Typeahead {
 						<div>Loading...</div>
 					)
 				) : (
-					<span
-						ref={ref => (this.inputRef = ref)}
-						onFocus={this._onFocus}
-					>
+					<span ref={ref => (this.inputRef = ref)} onFocus={this._onFocus}>
 						<input
 							ref={ref => (this.entryRef = ref)}
-							type={
-								this.state.datatype == "number"
-									? "number"
-									: "text"
-							}
+							type={this.state.datatype == "number" ? "number" : "text"}
 							placeholder={this.props.placeholder}
 							className={inputClassList}
 							defaultValue={this.state.entryValue}

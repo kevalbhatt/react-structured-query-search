@@ -75,8 +75,7 @@ export default class Typeahead extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.fuzzySearchKeyAttribute =
-      nextProps.fuzzySearchKeyAttribute || this.props.fuzzySearchKeyAttribute;
+    this.fuzzySearchKeyAttribute = nextProps.fuzzySearchKeyAttribute || this.props.fuzzySearchKeyAttribute;
     this.setState({
       options: nextProps.options,
       header: nextProps.header,
@@ -111,10 +110,7 @@ export default class Typeahead extends Component {
       result = result.slice(0, this.props.maxVisible);
     }
 
-    if (
-      this.props.datatype == "textoptions" &&
-      !this.props.isAllowCustomValue
-    ) {
+    if (this.props.datatype == "textoptions" && !this.props.isAllowCustomValue) {
       return result.length == 0 ? [this.props.fuzzySearchEmptyMessage] : result;
     } else {
       return result;
@@ -205,9 +201,7 @@ export default class Typeahead extends Component {
   };
 
   _onTab = event => {
-    var option = this.selRef.state.selection
-      ? this.selRef.state.selection
-      : this.state.visible[0];
+    var option = this.selRef.state.selection ? this.selRef.state.selection : this.state.visible[0];
     this._onOptionSelected(option);
   };
 
@@ -217,9 +211,7 @@ export default class Typeahead extends Component {
       events[KeyEvent.DOM_VK_UP] = this.selRef.navUp;
       events[KeyEvent.DOM_VK_DOWN] = this.selRef.navDown;
     }
-    events[KeyEvent.DOM_VK_RETURN] = events[
-      KeyEvent.DOM_VK_ENTER
-    ] = this._onEnter;
+    events[KeyEvent.DOM_VK_RETURN] = events[KeyEvent.DOM_VK_ENTER] = this._onEnter;
     events[KeyEvent.DOM_VK_ESCAPE] = this._onEscape;
     events[KeyEvent.DOM_VK_TAB] = this._onTab;
 
@@ -228,17 +220,11 @@ export default class Typeahead extends Component {
 
   _onKeyDown = event => {
     // If Enter pressed
-    if (
-      event.keyCode === KeyEvent.DOM_VK_RETURN ||
-      event.keyCode === KeyEvent.DOM_VK_ENTER
-    ) {
+    if (event.keyCode === KeyEvent.DOM_VK_RETURN || event.keyCode === KeyEvent.DOM_VK_ENTER) {
       // If no options were provided so we can match on anything
       if (this.props.options.length === 0) {
         this._onOptionSelected(this.state.entryValue);
-      } else if (
-        this.props.options.indexOf(this.state.entryValue) > -1 ||
-        (this.state.entryValue.trim() != "" && this.props.isAllowCustomValue)
-      ) {
+      } else if (this.props.options.indexOf(this.state.entryValue) > -1 || (this.state.entryValue.trim() != "" && this.props.isAllowCustomValue)) {
         // If what has been typed in is an exact match of one of the options
         this._onOptionSelected(this.state.entryValue);
       }
@@ -301,11 +287,7 @@ export default class Typeahead extends Component {
 
   _getTypeaheadInput({ classList, inputClassList }) {
     return (
-      <span
-        ref={ref => (this.inputRef = ref)}
-        className={classList}
-        onFocus={this._onFocus}
-      >
+      <span ref={ref => (this.inputRef = ref)} className={classList} onFocus={this._onFocus}>
         <input
           ref={ref => (this.entryRef = ref)}
           type="text"
@@ -322,8 +304,7 @@ export default class Typeahead extends Component {
 
   render() {
     var inputClasses = {};
-    inputClasses[this.props.customClasses.input] = !!this.props.customClasses
-      .input;
+    inputClasses[this.props.customClasses.input] = !!this.props.customClasses.input;
     var inputClassList = classNames(inputClasses);
 
     var classes = {
@@ -334,11 +315,7 @@ export default class Typeahead extends Component {
 
     if (this._showDatePicker()) {
       return (
-        <span
-          ref={ref => (this.inputRef = ref)}
-          className={classList}
-          onFocus={this._onFocus}
-        >
+        <span ref={ref => (this.inputRef = ref)} className={classList} onFocus={this._onFocus}>
           <DatePicker
             isAllowOperator={this.props.isAllowOperator}
             ref={ref => (this.datepickerRef = ref)}

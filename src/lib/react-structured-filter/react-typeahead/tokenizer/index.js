@@ -19,12 +19,14 @@ export default class TypeaheadTokenizer extends Component {
     placeholder: propTypes.string,
     onTokenRemove: propTypes.func,
     onTokenAdd: propTypes.func,
+    onClearAll: propTypes.func,
     renderTokens: propTypes.func,
     fuzzySearchEmptyMessage: propTypes.string,
     fuzzySearchKeyAttribute: propTypes.string,
     isAllowSearchDropDownHeader: propTypes.bool,
     isAllowOperator: propTypes.bool,
-    isAllowCustomValue: propTypes.bool
+    isAllowCustomValue: propTypes.bool,
+    isAllowClearAll: propTypes.bool
   };
 
   static defaultProps = {
@@ -33,6 +35,7 @@ export default class TypeaheadTokenizer extends Component {
     customClasses: {},
     defaultValue: "",
     placeholder: "",
+    isAllowClearAll: true,
     fuzzySearchEmptyMessage: "No result found",
     onTokenAdd() {},
     onTokenRemove() {}
@@ -41,13 +44,15 @@ export default class TypeaheadTokenizer extends Component {
   constructor(props) {
     super(props);
     this.typeaheadRef = null;
+    this.skipCategorySet = new Set();
     this.state = {
-      selected: this.getDefaultSelectedValue(),
+      selected: [],
       category: "",
       operator: "",
       options: this.props.options,
       focused: false
     };
+    this.state.selected = this.getDefaultSelectedValue();
   }
 
   _renderTokens() {
@@ -55,8 +60,7 @@ export default class TypeaheadTokenizer extends Component {
       return this.props.renderTokens(this.state.selected);
     }
     var tokenClasses = {};
-    tokenClasses[this.props.customClasses.token] = !!this.props.customClasses
-      .token;
+    tokenClasses[this.props.customClasses.token] = !!this.props.customClasses.token;
     var classList = classNames(tokenClasses);
 
     var result = this.state.selected.map((selected, index) => {
@@ -66,9 +70,7 @@ export default class TypeaheadTokenizer extends Component {
       let mykey =
         selected.category +
         (this.props.isAllowOperator ? selected.operator : "") +
-        (typeof selected.value == "string"
-          ? selected.value
-          : selected.value[fuzzySearchKeyAttribute]) +
+        (typeof selected.value == "string" ? selected.value : selected.value[fuzzySearchKeyAttribute]) +
         index;
       return (
         <Token
@@ -151,10 +153,7 @@ export default class TypeaheadTokenizer extends Component {
     // Remove token ONLY when bksp pressed at beginning of line
     // without a selection
     var entry = this.typeaheadRef.getInputRef();
-    if (
-      entry.selectionStart == entry.selectionEnd &&
-      entry.selectionStart == 0
-    ) {
+    if (entry.selectionStart == entry.selectionEnd && entry.selectionStart == 0) {
       if (this.state.operator != "") {
         this.setState({ operator: "" });
       } else if (this.state.category != "") {
@@ -164,9 +163,7 @@ export default class TypeaheadTokenizer extends Component {
         if (!this.state.selected.length) {
           return;
         }
-        this._removeTokenForValue(
-          this.state.selected[this.state.selected.length - 1]
-        );
+        this._removeTokenForValue(this.state.selected[this.state.selected.length - 1]);
       }
       event.preventDefault();
     }
@@ -218,10 +215,7 @@ export default class TypeaheadTokenizer extends Component {
    * Returns the data type the input should use ("date" or "text")
    */
   _getInputType() {
-    if (
-      this.state.category != "" &&
-      (this.props.isAllowOperator ? this.state.operator != "" : true)
-    ) {
+    if (this.state.category != "" && (this.props.isAllowOperator ? this.state.operator != "" : true)) {
       return this._getCategoryType();
     } else {
       return "text";
@@ -247,12 +241,11 @@ export default class TypeaheadTokenizer extends Component {
 
   render() {
     var classes = {};
-    classes[this.props.customClasses.typeahead] = !!this.props.customClasses
-      .typeahead;
+    classes[this.props.customClasses.typeahead] = !!this.props.customClasses.typeahead;
     var classList = classNames(classes);
     return (
       <div
-        className="filter-tokenizer"
+        className={`filter-tokenizer ${this.props.isAllowClearAll ? "padding-for-clear-all" : ""}`}
         ref={node => {
           this.node = node;
         }}
@@ -266,6 +259,7 @@ export default class TypeaheadTokenizer extends Component {
             {this._getTypeahed({ classList })}
           </div>
         </div>
+        {this.props.isAllowClearAll ? this._getClearAllButton() : null}
       </div>
     );
   }

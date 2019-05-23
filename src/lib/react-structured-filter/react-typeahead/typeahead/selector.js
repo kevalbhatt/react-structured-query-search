@@ -109,9 +109,7 @@ export default class TypeaheadSelector extends Component {
     var classes = {
       "typeahead-selector": true
     };
-    classes[
-      this.props.customClasses.results
-    ] = this.props.customClasses.results;
+    classes[this.props.customClasses.results] = this.props.customClasses.results;
     var classList = classNames(classes);
     this.selectedItemRef = null;
     var results = this.props.options.map(function(result, i) {
@@ -133,8 +131,7 @@ export default class TypeaheadSelector extends Component {
     }, this);
     return (
       <ul className={classList} ref={ref => (this.listParentRef = ref)}>
-        {this.props.fromTokenizer === true &&
-        this.props.isAllowSearchDropDownHeader === true ? (
+        {this.props.fromTokenizer === true && this.props.isAllowSearchDropDownHeader === true ? (
           <li className="header">{this.props.header}</li>
         ) : null}
         {results}

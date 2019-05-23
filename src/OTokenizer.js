@@ -13,6 +13,20 @@ export default class OTokenizer extends Tokenizer {
 		} else {
 			defaultValue = this.props.defaultSelected;
 		}
+		let selectedValueSet = {};
+		defaultValue.forEach(val => {
+			if (selectedValueSet[val.category]) {
+				selectedValueSet[val.category].push(val);
+			} else {
+				selectedValueSet[val.category] = [val];
+			}
+		});
+		this.props.options.forEach(val => {
+			if (selectedValueSet[val.category]) {
+				// escape category if options is not avilable.
+				this._getOptions({ options: val.options, category: val.category });
+			}
+		});
 		return defaultValue;
 	}
 
@@ -31,15 +45,11 @@ export default class OTokenizer extends Tokenizer {
 			let node = ReactDOM.findDOMNode(this);
 			if (
 				(node && node.contains(e.target)) ||
-				((e.target && e.target.className == "typeahead-option") ||
-					e.target.className == "typeahead-token-close")
+				((e.target && e.target.className == "typeahead-option") || e.target.className == "typeahead-token-close")
 			) {
 				return;
 			}
-			if (
-				this.state.focused === true &&
-				!this.typeaheadRef.isOptionsLoading()
-			) {
+			if (this.state.focused === true && !this.typeaheadRef.isOptionsLoading()) {
 				this.setState({ focused: false });
 			}
 		}
@@ -63,20 +73,10 @@ export default class OTokenizer extends Tokenizer {
 			for (var i = 0; i < this.state.options.length; i++) {
 				let options = this.state.options[i],
 					category = options.category,
-					isAllowCustomValue =
-						options.isAllowCustomValue == undefined
-							? false
-							: options.isAllowCustomValue,
-					isAllowDuplicateCategories =
-						options.isAllowDuplicateCategories == undefined
-							? true
-							: options.isAllowDuplicateCategories;
+					isAllowCustomValue = options.isAllowCustomValue == undefined ? false : options.isAllowCustomValue,
+					isAllowDuplicateCategories = options.isAllowDuplicateCategories == undefined ? true : options.isAllowDuplicateCategories;
 
-				if (
-					isAllowCustomValue == false &&
-					this.skipCategorySet &&
-					this.skipCategorySet.has(category)
-				) {
+				if (isAllowCustomValue == false && this.skipCategorySet && this.skipCategorySet.has(category)) {
 					continue;
 				}
 				if (isAllowDuplicateCategories == false) {
@@ -112,79 +112,75 @@ export default class OTokenizer extends Tokenizer {
 				}
 			}
 		} else {
-			var options = this._getCategoryOptions();
-			if (options == null) {
-				return [];
-			} else {
-				if (typeof options === "function") {
-					let opt = options();
-					if (typeof opt == "object") {
-						if (opt instanceof Promise) {
-							return opt;
-						} else {
-							return this.filterOptionsValue({ options: opt });
-						}
-					}
-				} else {
-					return this.filterOptionsValue({ options });
-				}
-			}
+			return this._getOptions({ options: this._getCategoryOptions() });
 		}
 		return this.state.options;
 	}
 
-	filterOptionsValue({ options }) {
-		if (
-			this._getAllowDuplicateOptions() == false &&
-			this.state.selected.length &&
-			this.state.category != ""
-		) {
-			let optionsList = [];
-			if (options && options.length) {
-				var listToFindOptionOnIt = [];
-				if (this._getAllowDuplicateCategories()) {
-					listToFindOptionOnIt = this.state.selected.filter(o => {
-						return o.category == this.state.category;
-					});
-				} else {
-					listToFindOptionOnIt = this.state.selected.find(o => {
-						return o.category == this.state.category;
-					});
+	_getOptions({ options, category = this.state.category }) {
+		if (options == null) {
+			return [];
+		} else {
+			if (typeof options === "function") {
+				let opt = options();
+				if (typeof opt == "object") {
+					if (opt instanceof Promise) {
+						return opt;
+					} else {
+						return this.filterOptionsValue({ options: opt, category: category });
+					}
 				}
-				let fuzzySearchKeyAttribute = this._getFuzzySearchKeyAttribute({
-					category: this.state.category
-				});
-				options.forEach(val => {
-					let foundOption = listToFindOptionOnIt.find(o => {
-						if (typeof val === "object") {
-							return (
-								o.value[fuzzySearchKeyAttribute] ==
-								val[fuzzySearchKeyAttribute]
-							);
-						} else {
-							return o.value == val;
+			} else {
+				return this.filterOptionsValue({ options: options, category: category });
+			}
+		}
+	}
+
+	filterOptionsValue({ options, category, selected = this.state.selected }) {
+		if (this._getAllowDuplicateOptions({ constategory: category }) == false) {
+			if (selected.length && category != "") {
+				let optionsList = [];
+				if (options && options.length) {
+					var listToFindOptionOnIt = [];
+					if (this._getAllowDuplicateCategories({ category: category })) {
+						listToFindOptionOnIt = selected.filter(o => {
+							return o.category == category;
+						});
+					} else {
+						listToFindOptionOnIt = selected.find(o => {
+							return o.category == category;
+						});
+					}
+					let fuzzySearchKeyAttribute = this._getFuzzySearchKeyAttribute({
+						category: category
+					});
+					options.forEach(val => {
+						let foundOption = listToFindOptionOnIt.find(o => {
+							if (typeof val === "object") {
+								return o.value[fuzzySearchKeyAttribute] == val[fuzzySearchKeyAttribute];
+							} else {
+								return o.value == val;
+							}
+						});
+						if (!foundOption) {
+							optionsList.push(val);
 						}
 					});
-					if (!foundOption) {
-						optionsList.push(val);
+					if ((options.length > optionsList.length && optionsList.length == 1) || (options.length == 1 && optionsList.length == 1)) {
+						this.skipCategorySet.add(category);
 					}
-				});
-				if (
-					(options.length > optionsList.length &&
-						optionsList.length == 1) ||
-					(options.length == 1 && optionsList.length == 1)
-				) {
-					if (this.skipCategorySet == undefined) {
-						this.skipCategorySet = new Set();
-					}
-					this.skipCategorySet.add(this.state.category);
+					return optionsList;
+				} else {
+					return [];
 				}
-				return optionsList;
 			} else {
-				return [];
+				if (options.length === 1 && category) {
+					this.skipCategorySet.add(category);
+				}
+				return options || [];
 			}
 		} else {
-			return options;
+			return options || [];
 		}
 	}
 
@@ -199,13 +195,11 @@ export default class OTokenizer extends Tokenizer {
 		return this.state.options;
 	}
 
-	_getAllowDuplicateCategories() {
-		if (this.state.category) {
-			for (var i = 0; i < this.state.options.length; i++) {
-				if (this.state.options[i].category == this.state.category) {
-					return (
-						this.state.options[i].isAllowDuplicateCategories || true
-					);
+	_getAllowDuplicateCategories({ category, options = this.state.options }) {
+		if (category) {
+			for (var i = 0; i < options.length; i++) {
+				if (options[i].category == category) {
+					return options[i].isAllowDuplicateCategories || true;
 				}
 			}
 		} else {
@@ -213,13 +207,11 @@ export default class OTokenizer extends Tokenizer {
 		}
 	}
 
-	_getAllowDuplicateOptions() {
-		if (this.state.category) {
-			for (var i = 0; i < this.state.options.length; i++) {
-				if (this.state.options[i].category == this.state.category) {
-					return (
-						this.state.options[i].isAllowDuplicateOptions || false
-					);
+	_getAllowDuplicateOptions({ category, options = this.state.options }) {
+		if (category) {
+			for (var i = 0; i < options.length; i++) {
+				if (options[i].category == category) {
+					return options[i].isAllowDuplicateOptions || false;
 				}
 			}
 		} else {
@@ -227,11 +219,11 @@ export default class OTokenizer extends Tokenizer {
 		}
 	}
 
-	_getAllowCustomValue() {
-		if (this.state.category) {
-			for (var i = 0; i < this.state.options.length; i++) {
-				if (this.state.options[i].category == this.state.category) {
-					return this.state.options[i].isAllowCustomValue || false;
+	_getAllowCustomValue({ category, options = this.state.options }) {
+		if (category) {
+			for (var i = 0; i < options.length; i++) {
+				if (options[i].category == category) {
+					return options[i].isAllowCustomValue || false;
 				}
 			}
 		} else {
@@ -239,10 +231,10 @@ export default class OTokenizer extends Tokenizer {
 		}
 	}
 
-	_getFuzzySearchKeyAttribute({ category }) {
-		for (var i = 0; i < this.state.options.length; i++) {
-			if (this.state.options[i].category == category) {
-				return this.state.options[i].fuzzySearchKeyAttribute || "name";
+	_getFuzzySearchKeyAttribute({ category, options = this.state.options }) {
+		for (var i = 0; i < options.length; i++) {
+			if (options[i].category == category) {
+				return options[i].fuzzySearchKeyAttribute || "name";
 			}
 		}
 	}
@@ -268,10 +260,7 @@ export default class OTokenizer extends Tokenizer {
 		}
 
 		let removedObj = this.state.selected.splice(index, 1)[0];
-		if (
-			this.skipCategorySet &&
-			this.skipCategorySet.has(removedObj.category)
-		) {
+		if (this.skipCategorySet && this.skipCategorySet.has(removedObj.category)) {
 			this.skipCategorySet.delete(removedObj.category);
 		}
 		let stateObj = { selected: this.state.selected };
@@ -336,11 +325,34 @@ export default class OTokenizer extends Tokenizer {
 				Object.assign(stateObj, { options: newOptions });
 			}
 		}
-		this.setState(stateObj, () =>
-			this.props.onTokenAdd(this.state.selected)
-		);
+		this.setState(stateObj, () => this.props.onTokenAdd(this.state.selected));
 		return;
 	};
+
+	_onClearAll = () => {
+		this.setState({ selected: [], category: "", operator: "" }, () => {
+			if (this.props.onClearAll) {
+				this.props.onClearAll(this.state.selected);
+			}
+		});
+	};
+
+	_getClearAllButton() {
+		return (
+			<div className="clear-all">
+				<a
+					className="typeahead-token-close"
+					href="javascript:void(0)"
+					onClick={function(event) {
+						this._onClearAll();
+						event.preventDefault();
+					}.bind(this)}
+				>
+					&#x00d7;
+				</a>
+			</div>
+		);
+	}
 
 	_getTypeahed({ classList }) {
 		return (
@@ -361,7 +373,9 @@ export default class OTokenizer extends Tokenizer {
 				options={this._getOptionsForTypeahead()}
 				header={this._getHeader()}
 				datatype={this._getInputType()}
-				isAllowCustomValue={this._getAllowCustomValue()}
+				isAllowCustomValue={this._getAllowCustomValue({
+					category: this.state.category
+				})}
 				defaultValue={this.props.defaultValue}
 				onOptionSelected={this._addTokenForValue}
 				onKeyDown={this._onKeyDown}

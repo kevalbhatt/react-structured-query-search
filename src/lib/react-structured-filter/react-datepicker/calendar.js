@@ -71,17 +71,9 @@ class Calendar extends Component {
       <div className="datepicker">
         <div className="datepicker__triangle" />
         <div className="datepicker__header">
-          <a
-            className="datepicker__navigation datepicker__navigation--previous"
-            onClick={this.decreaseMonth}
-          />
-          <span className="datepicker__current-month">
-            {this.state.date.format("MMMM YYYY")}
-          </span>
-          <a
-            className="datepicker__navigation datepicker__navigation--next"
-            onClick={this.increaseMonth}
-          />
+          <a className="datepicker__navigation datepicker__navigation--previous" onClick={this.decreaseMonth} />
+          <span className="datepicker__current-month">{this.state.date.format("MMMM YYYY")}</span>
+          <a className="datepicker__navigation datepicker__navigation--next" onClick={this.increaseMonth} />
           <div>
             <div className="datepicker__day">Mo</div>
             <div className="datepicker__day">Tu</div>

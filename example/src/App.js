@@ -29,7 +29,8 @@ export default class App extends Component {
 				category: "Sector",
 				type: "textoptions",
 				fuzzySearchKeyAttribute: "sectorName",
-				isAllowDuplicateOptions: true,
+				isAllowCustomValue: false,
+				isAllowDuplicateOptions: false,
 				options: this.getSectorOptions
 			},
 			{
@@ -49,12 +50,9 @@ export default class App extends Component {
 		if (this.state.SymbolData.length === 0) {
 			return new Promise((resolve, reject) => {
 				setTimeout(() => {
-					this.setState(
-						{ SymbolData: ["TFSC", "PIL", "VNET"] },
-						() => {
-							return resolve(this.state.SymbolData);
-						}
-					);
+					this.setState({ SymbolData: ["TFSC", "PIL", "VNET"] }, () => {
+						return resolve(this.state.SymbolData);
+					});
 				}, 2000);
 			});
 		} else {
@@ -67,10 +65,8 @@ export default class App extends Component {
 	 * @return {[array]}
 	 */
 	getSectorOptions() {
-		return [
-			{ sectorName: "Finance", id: 1 },
-			{ sectorName: "Consumer Services", id: 2 }
-		];
+		return [{ sectorName: "Finance", id: 1 }];
+		//return [{ sectorName: "Finance", id: 1 }, { sectorName: "Consumer Services", id: 2 }];
 	}
 
 	/**
@@ -78,29 +74,26 @@ export default class App extends Component {
 	 * @return {[array]}
 	 */
 	getIndustryOptions() {
-		return [
-			{ name: "Business Services", id: 1 },
-			{ name: "Other Specialty Stores", id: 2 }
-		];
+		return [{ name: "Business Services", id: 1 }, { name: "Other Specialty Stores", id: 2 }];
 	}
 
-	getTokenItem(obj){
+	getTokenItem(obj) {
 		let val = obj.children;
-		return `${val["category"]}: val`
+		return `${val["category"]}: val`;
 	}
 
 	render() {
 		return (
 			<div className="container">
 				<ReactStructuredQuerySearch
+					defaultSelected={[
+						{ category: "Sector", value: { sectorName: "Finance", id: 1 } },
+						{ category: "Industry", value: { name: "Other Specialty Stores", id: 2 } }
+					]}
 					options={this.options}
 					//renderTokenItem={this.getTokenItem}
 					updateOptions={({ updatedValues, addedValue }) => {
-						if (
-							addedValue &&
-							addedValue.category === "Symbol" &&
-							addedValue.value === "TFSC"
-						) {
+						if (addedValue && addedValue.category === "Symbol" && addedValue.value === "TFSC") {
 							this.options.push({
 								category: "New Category",
 								type: "text"

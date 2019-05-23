@@ -31,8 +31,7 @@ export default class TypeaheadOption extends Component {
     var classes = {
       "typeahead-option": true
     };
-    classes[this.props.customClasses.listAnchor] = !!this.props.customClasses
-      .listAnchor;
+    classes[this.props.customClasses.listAnchor] = !!this.props.customClasses.listAnchor;
     return classNames(classes);
   }
 
@@ -49,8 +48,7 @@ export default class TypeaheadOption extends Component {
       hover: this.props.hover,
       disabled: this.props.disabled
     };
-    classes[this.props.customClasses.listItem] = !!this.props.customClasses
-      .listItem;
+    classes[this.props.customClasses.listItem] = !!this.props.customClasses.listItem;
     var classList = classNames(classes);
 
     return (
