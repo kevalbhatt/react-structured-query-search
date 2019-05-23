@@ -70,8 +70,8 @@ export default class OTypeahead extends Typeahead {
 		return (
 			<div className={classList}>
 				{this.state.loadingOptions ? (
-					this.props.loadingRender ? (
-						this.props.loadingRender()
+					this.props.renderLoading ? (
+						this.props.renderLoading()
 					) : (
 						<div>Loading...</div>
 					)
@@ -85,6 +85,7 @@ export default class OTypeahead extends Typeahead {
 							defaultValue={this.state.entryValue}
 							onChange={this._onTextEntryUpdated}
 							onKeyDown={this._onKeyDown}
+							disabled={this.props.disabled}
 						/>
 						{this._renderIncrementalSearchResults()}
 					</span>

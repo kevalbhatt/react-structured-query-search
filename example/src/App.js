@@ -90,6 +90,7 @@ export default class App extends Component {
 						{ category: "Sector", value: { sectorName: "Finance", id: 1 } },
 						{ category: "Industry", value: { name: "Other Specialty Stores", id: 2 } }
 					]}
+					disabled={true}
 					options={this.options}
 					//renderTokenItem={this.getTokenItem}
 					updateOptions={({ updatedValues, addedValue }) => {

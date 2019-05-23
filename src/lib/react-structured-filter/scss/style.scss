@@ -97,6 +97,13 @@
 	display: table;
 	background-color: $white;
 	position: relative;
+	&.disabled {
+		opacity: 0.5;
+		.typeahead-token-close,
+		.clear-all {
+			display: none;
+		}
+	}
 	&.padding-for-clear-all {
 		width: calc(100% - 16px);
 		padding: 16px;

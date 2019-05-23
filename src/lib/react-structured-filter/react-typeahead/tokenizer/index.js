@@ -26,7 +26,8 @@ export default class TypeaheadTokenizer extends Component {
     isAllowSearchDropDownHeader: propTypes.bool,
     isAllowOperator: propTypes.bool,
     isAllowCustomValue: propTypes.bool,
-    isAllowClearAll: propTypes.bool
+    isAllowClearAll: propTypes.bool,
+    disabled: propTypes.bool
   };
 
   static defaultProps = {
@@ -36,6 +37,7 @@ export default class TypeaheadTokenizer extends Component {
     defaultValue: "",
     placeholder: "",
     isAllowClearAll: true,
+    disabled: false,
     fuzzySearchEmptyMessage: "No result found",
     onTokenAdd() {},
     onTokenRemove() {}
@@ -245,7 +247,7 @@ export default class TypeaheadTokenizer extends Component {
     var classList = classNames(classes);
     return (
       <div
-        className={`filter-tokenizer ${this.props.isAllowClearAll ? "padding-for-clear-all" : ""}`}
+        className={`filter-tokenizer ${this.props.isAllowClearAll ? "padding-for-clear-all" : ""} ${this.props.disabled ? "disabled" : ""}`}
         ref={node => {
           this.node = node;
         }}

@@ -25,6 +25,7 @@ export default class Typeahead extends Component {
     fuzzySearchKeyAttribute: propTypes.string,
     fuzzySearchIdAttribute: propTypes.string,
     datatype: propTypes.string,
+    disabled: propTypes.bool,
     defaultValue: propTypes.string,
     placeholder: propTypes.string,
     onOptionSelected: propTypes.func,

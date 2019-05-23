@@ -254,6 +254,9 @@ export default class OTokenizer extends Tokenizer {
 	};
 
 	_removeTokenForValue = value => {
+		if (this.props.disabled) {
+			return;
+		}
 		var index = this.state.selected.indexOf(value);
 		if (index == -1) {
 			return;
@@ -282,6 +285,9 @@ export default class OTokenizer extends Tokenizer {
 	};
 
 	_addTokenForValue = value => {
+		if (this.props.disabled) {
+			return;
+		}
 		const { isAllowOperator } = this.props;
 		if (this.state.category == "") {
 			this.state.category = value;
@@ -330,6 +336,9 @@ export default class OTokenizer extends Tokenizer {
 	};
 
 	_onClearAll = () => {
+		if (this.props.disabled) {
+			return;
+		}
 		this.setState({ selected: [], category: "", operator: "" }, () => {
 			if (this.props.onClearAll) {
 				this.props.onClearAll(this.state.selected);
@@ -358,6 +367,7 @@ export default class OTokenizer extends Tokenizer {
 		return (
 			<Typeahead
 				ref={ref => (this.typeaheadRef = ref)}
+				disabled={this.props.disabled}
 				isAllowOperator={this.props.isAllowOperator}
 				onElementFocused={this.onElementFocused}
 				isElemenFocused={this.state.focused}
