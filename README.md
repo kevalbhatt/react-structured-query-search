@@ -38,11 +38,13 @@ If you want to use `Tokenizer` then you either import as follows:
 
 ```jsx
 import ReactStructuredQuerySearch from "react-structured-query-search";
+import "react-structured-query-search/dist/index.css";
 ```
 #### or
 
 ```jsx
 import {Tokenizer} from "react-structured-query-search";
+import "react-structured-query-search/dist/index.css";
 ```
 ---
 
@@ -50,6 +52,7 @@ If you want to use `Typeahead` then you have to import as follows:
 
 ```jsx
 import {Typeahead} from "react-structured-query-search";
+import "react-structured-query-search/dist/index.css";
 ```
 
 # API

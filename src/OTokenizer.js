@@ -339,6 +339,7 @@ export default class OTokenizer extends Tokenizer {
 		if (this.props.disabled) {
 			return;
 		}
+		this.skipCategorySet.clear();
 		this.setState({ selected: [], category: "", operator: "" }, () => {
 			if (this.props.onClearAll) {
 				this.props.onClearAll(this.state.selected);
