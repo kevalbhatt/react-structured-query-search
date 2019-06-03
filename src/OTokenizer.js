@@ -24,7 +24,7 @@ export default class OTokenizer extends Tokenizer {
 		this.props.options.forEach(val => {
 			if (selectedValueSet[val.category]) {
 				// escape category if options is not avilable.
-				this._getOptions({ options: val.options, category: val.category });
+				this._getOptions({ options: val.options, category: val.category, selected: selectedValueSet[val.category], fromDefaultValue: true });
 			}
 		});
 		return defaultValue;
@@ -117,7 +117,8 @@ export default class OTokenizer extends Tokenizer {
 		return this.state.options;
 	}
 
-	_getOptions({ options, category = this.state.category }) {
+	_getOptions(optionsObj) {
+		const { options } = optionsObj;
 		if (options == null) {
 			return [];
 		} else {
@@ -127,16 +128,16 @@ export default class OTokenizer extends Tokenizer {
 					if (opt instanceof Promise) {
 						return opt;
 					} else {
-						return this.filterOptionsValue({ options: opt, category: category });
+						return this.filterOptionsValue(Object.assign(optionsObj, { options: opt }));
 					}
 				}
 			} else {
-				return this.filterOptionsValue({ options: options, category: category });
+				return this.filterOptionsValue(optionsObj);
 			}
 		}
 	}
 
-	filterOptionsValue({ options, category, selected = this.state.selected }) {
+	filterOptionsValue({ options, category = this.state.category, selected = this.state.selected, fromDefaultValue }) {
 		if (this._getAllowDuplicateOptions({ constategory: category }) == false) {
 			if (selected.length && category != "") {
 				let optionsList = [];
@@ -166,7 +167,11 @@ export default class OTokenizer extends Tokenizer {
 							optionsList.push(val);
 						}
 					});
-					if ((options.length > optionsList.length && optionsList.length == 1) || (options.length == 1 && optionsList.length == 1)) {
+					if (
+						(fromDefaultValue && optionsList.length === 0) ||
+						(!fromDefaultValue &&
+							((options.length > optionsList.length && optionsList.length == 1) || (options.length == 1 && optionsList.length == 1)))
+					) {
 						this.skipCategorySet.add(category);
 					}
 					return optionsList;

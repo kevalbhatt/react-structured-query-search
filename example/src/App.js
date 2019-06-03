@@ -66,8 +66,7 @@ export default class App extends Component {
 	 * @return {[array]}
 	 */
 	getSectorOptions() {
-		return [{ sectorName: "Finance", id: 1 }];
-		//return [{ sectorName: "Finance", id: 1 }, { sectorName: "Consumer Services", id: 2 }];
+		return [{ sectorName: "Finance", id: 1 }, { sectorName: "Consumer Services", id: 2 }, { sectorName: "Services", id: 3 }];
 	}
 
 	/**
@@ -89,6 +88,7 @@ export default class App extends Component {
 				<ReactStructuredQuerySearch
 					defaultSelected={[
 						{ category: "Sector", value: { sectorName: "Finance", id: 1 } },
+						{ category: "Sector", value: { sectorName: "Consumer Services", id: 2 } },
 						{ category: "Industry", value: { name: "Other Specialty Stores", id: 2 } }
 					]}
 					options={this.options}
