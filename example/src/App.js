@@ -21,7 +21,7 @@ export default class App extends Component {
 				category: "Name",
 				type: "text",
 				isAllowDuplicateCategories: false,
-				operator: () => ["==", "!==", "containes"]
+				operator: () => null
 			},
 			{ category: "Price", type: "number" },
 			{ category: "MarketCap", type: "number" },
@@ -32,6 +32,7 @@ export default class App extends Component {
 				fuzzySearchKeyAttribute: "sectorName",
 				isAllowCustomValue: false,
 				isAllowDuplicateOptions: false,
+				operator: null,
 				options: this.getSectorOptions
 			},
 			{
@@ -86,6 +87,7 @@ export default class App extends Component {
 		return (
 			<div className="container">
 				<ReactStructuredQuerySearch
+					isAllowOperator={true}
 					defaultSelected={[
 						{ category: "Sector", value: { sectorName: "Finance", id: 1 } },
 						{ category: "Sector", value: { sectorName: "Consumer Services", id: 2 } },

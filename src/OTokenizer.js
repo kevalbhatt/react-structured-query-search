@@ -59,6 +59,14 @@ export default class OTokenizer extends Tokenizer {
 		this.setState(val);
 	};
 
+	_getInputType() {
+		if (this.state.category != "" && (this.props.isAllowOperator && this._getCategoryOperator() !== null ? this.state.operator != "" : true)) {
+			return this._getCategoryType();
+		} else {
+			return "text";
+		}
+	}
+
 	_getCategoryOperator() {
 		for (var i = 0; i < this.state.options.length; i++) {
 			if (this.state.options[i].category == this.state.category) {
@@ -91,7 +99,7 @@ export default class OTokenizer extends Tokenizer {
 				}
 			}
 			return categories;
-		} else if (this.props.isAllowOperator && this.state.operator == "") {
+		} else if (this.props.isAllowOperator && this._getCategoryOperator() !== null && this.state.operator == "") {
 			let categoryType = this._getCategoryType();
 			let categoryOperator = this._getCategoryOperator();
 			if (categoryOperator) {
@@ -293,14 +301,17 @@ export default class OTokenizer extends Tokenizer {
 		if (this.props.disabled) {
 			return;
 		}
-		const { isAllowOperator } = this.props;
+		let { isAllowOperator } = this.props;
+
 		if (this.state.category == "") {
 			this.state.category = value;
 			this.setState({ category: value });
 			this.typeaheadRef.setEntryText("");
 			return;
 		}
-
+		if (this.state.category !== "" && isAllowOperator) {
+			isAllowOperator = this._getCategoryOperator() !== null;
+		}
 		if (isAllowOperator && this.state.operator == "") {
 			this.state.operator = value;
 			this.setState({ operator: value });
