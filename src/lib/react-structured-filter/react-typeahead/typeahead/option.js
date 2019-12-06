@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import propTypes from "prop-types";
-import classNames from "classNames";
+import classNames from "classnames";
 
 /**
  * A single option within the TypeaheadSelector

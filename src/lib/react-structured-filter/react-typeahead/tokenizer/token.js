@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import propTypes from "prop-types";
 
 /**
@@ -29,12 +29,31 @@ export default class Token extends Component {
     );
   }
 
+  _makeEditButton() {
+    if (!this.props.onRemoveToken) {
+      return "";
+    }
+    return (
+      <a
+        className="typeahead-token-edit"
+        href="javascript:void(0)"
+        onClick={function(event) {
+          event.stopPropagation();
+          event.preventDefault();
+          this.props.onEditToken(this.props.children);
+        }.bind(this)}
+      >
+        &#x1F589;
+      </a>
+    );
+  }
+
   getTokenValue() {
     let value = this.props.children["value"];
     if (value && typeof value == "object") {
       return value[this.props.fuzzySearchKeyAttribute];
     } else {
-      return value;
+      return value.trim();
     }
   }
 
@@ -42,16 +61,18 @@ export default class Token extends Component {
     if (this.props.renderTokenItem) {
       return this.props.renderTokenItem(this.props);
     } else {
-      let val = this.props.children;
-      return `${val["category"]} ${val.operator == undefined ? "" : val.operator} "${this.getTokenValue()}" `;
+      let val = this.props.children,
+       tokenVal = (val.conditional && val.conditional.includes(')')) ? this.getTokenValue() : `"${this.getTokenValue()}"`;
+      return `${val.conditional == undefined ? "" : val.conditional} ${val["category"]} ${val.operator == undefined ? "" : val.operator} ${tokenVal} `;
     }
   }
 
   render() {
     return (
       <div className="typeahead-token">
-        {this.getTokenItem()}
         {this._makeCloseButton()}
+        {this.getTokenItem()}
+        {this._makeEditButton()}
       </div>
     );
   }

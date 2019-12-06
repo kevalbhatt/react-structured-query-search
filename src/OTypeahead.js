@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Typeahead } from "./lib/react-structured-filter/react-typeahead/react-typeahead";
+import CustomQueryTokenizer from './CustomQueryTokenizer';
 
 // Override the Tokenizer
 export default class OTypeahead extends Typeahead {
@@ -66,31 +67,38 @@ export default class OTypeahead extends Typeahead {
 		}
 	}
 
-	_getTypeaheadInput({ classList, inputClassList }) {
+	_getTypeaheadInput({classList, inputClassList}) {
 		return (
-			<div className={classList}>
-				{this.state.loadingOptions ? (
-					this.props.renderLoading ? (
-						this.props.renderLoading()
-					) : (
-						<div>Loading...</div>
-					)
-				) : (
-					<span ref={ref => (this.inputRef = ref)} onFocus={this._onFocus}>
-						<input
-							ref={ref => (this.entryRef = ref)}
-							type={this.state.datatype == "number" ? "number" : "text"}
-							placeholder={this.props.placeholder}
-							className={inputClassList}
-							defaultValue={this.state.entryValue}
-							onChange={this._onTextEntryUpdated}
-							onKeyDown={this._onKeyDown}
-							disabled={this.props.disabled}
-						/>
-						{this._renderIncrementalSearchResults()}
-					</span>
-				)}
-			</div>
+		  <div className={classList}>
+			{this.state.loadingOptions
+			  ? this.props.renderLoading
+				  ? this.props.renderLoading ()
+				  : <div>Loading...</div>
+			  : <span ref={ref => (this.inputRef = ref)} onFocus={this._onFocus}>
+				  {this.state.datatype == 'custom'
+					? <CustomQueryTokenizer
+						ref={ref => (this.entryRef = ref)}
+						type={this.state.datatype}
+						placeholder={this.props.placeholder}
+						defaultValue={this.state.entryValue}
+						parentCallBack={this.props.parentCallBack}
+						disabled={this.props.disabled}
+						updatedInputText={this._onTextEntryUpdated}
+						{...this.props}
+					  />
+					: <input
+						ref={ref => (this.entryRef = ref)}
+						type={this.state.datatype == 'number' ? 'number' : 'text'}
+						placeholder={this.props.placeholder}
+						className={inputClassList}
+						defaultValue={this.state.entryValue}
+						onChange={this._onTextEntryUpdated}
+						onKeyDown={this._onKeyDown}
+						disabled={this.props.disabled}
+					  />}
+				  {this._renderIncrementalSearchResults ()}
+				</span>}
+		  </div>
 		);
 	}
 }

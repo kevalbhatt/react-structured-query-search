@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import { Tokenizer } from "./lib/react-structured-filter/react-typeahead/react-typeahead";
 import Typeahead from "./OTypeahead";
+import classNames from "classnames";
 
 // Override the Tokenizer
 export default class OTokenizer extends Tokenizer {
@@ -49,7 +50,7 @@ export default class OTokenizer extends Tokenizer {
 			) {
 				return;
 			}
-			if (this.state.focused === true && !this.typeaheadRef.isOptionsLoading()) {
+			if (this.state.focused === true && this.typeaheadRef && !this.typeaheadRef.isOptionsLoading()) {
 				this.setState({ focused: false });
 			}
 		}
@@ -60,7 +61,9 @@ export default class OTokenizer extends Tokenizer {
 	};
 
 	_getInputType() {
-		if (this.state.category != "" && (this.props.isAllowOperator && this._getCategoryOperator() !== null ? this.state.operator != "" : true)) {
+		if (this.state.category === "Query") {
+			return "custom";
+		} else if (this.state.category != "" && (this.props.isAllowOperator && this._getCategoryOperator() !== null ? this.state.operator != "" : true)) {
 			return this._getCategoryType();
 		} else {
 			return "text";
@@ -75,8 +78,53 @@ export default class OTokenizer extends Tokenizer {
 		}
 	}
 
+	_checkConditionalOptions () {
+		return this.state.options.filter(function(o) {
+			return o.conditional !== null && o.conditional !== undefined && o.conditional !== "";
+		}).length > 0 ? true : false;
+	}
+
+	_checkSpeacialChar (val) {
+		var  match = new RegExp(/[^a-zA-Z]/g);
+		return match.test(val);
+	}
+
+	_showCloseBracketOptions (val) {
+		let showCloseBracket =  this.state.selected.length > 0 ? true :  !this._checkSpeacialChar(val);
+		if (this.state.selected.length > 0 && (val.includes(',') || val.includes(' )'))) {
+			showCloseBracket = this._bracketHasClosed() && !this.state.ediTableTokenId ? false : true;
+		}
+		return showCloseBracket;
+	}
+
+	_bracketHasClosed = () => {
+		if (this.state.selected.length === 0) {
+			return false;
+		}
+		const obj = { open: 0, close: 0 };
+			this.state.selected.map((s) => {
+				if (s.conditional.includes('(')) {
+					obj.open =  ++obj.open
+				} else if (s.conditional.includes(')')) {
+					obj.close =  ++obj.close
+				}
+			});
+		return obj.open === obj.close;
+	}
+
 	_getOptionsForTypeahead() {
-		if (this.state.category == "") {
+		const closeBracket = this.state.conditional && this.state.conditional.includes(')') ? true : false;
+		if (this.state.conditional == "" && this._checkConditionalOptions()) {
+			var conditional = [];
+			for (var i = 0; i < this.state.options.length; i++) {
+				var options = this.state.options[i],
+					condition = options.conditional;
+					if (condition && this._showCloseBracketOptions(condition)) {
+						conditional.push(condition);
+					}
+			}
+			return conditional;
+		} else if (this.state.category == "" && !closeBracket ) {
 			var categories = [];
 			for (var i = 0; i < this.state.options.length; i++) {
 				let options = this.state.options[i],
@@ -91,15 +139,17 @@ export default class OTokenizer extends Tokenizer {
 					let foundCategory = this.state.selected.find(function(obj) {
 						return obj.category == category;
 					});
-					if (!foundCategory) {
+					if (!foundCategory && category.trim() !== "") {
 						categories.push(category);
 					}
 				} else {
-					categories.push(category);
+					if (category.trim() !== "") {
+						categories.push(category);
+					}
 				}
 			}
 			return categories;
-		} else if (this.props.isAllowOperator && this._getCategoryOperator() !== null && this.state.operator == "") {
+		} else if (this.props.isAllowOperator && this._getCategoryOperator() !== null && this.state.operator == ""  && !this.state.conditional.includes(')')) {
 			let categoryType = this._getCategoryType();
 			let categoryOperator = this._getCategoryOperator();
 			if (categoryOperator) {
@@ -132,7 +182,7 @@ export default class OTokenizer extends Tokenizer {
 		} else {
 			if (typeof options === "function") {
 				let opt = options();
-				if (typeof opt == "object") {
+				if (typeof opt == "object" && !this.state.conditional.includes(')')) {
 					if (opt instanceof Promise) {
 						return opt;
 					} else {
@@ -198,7 +248,9 @@ export default class OTokenizer extends Tokenizer {
 	}
 
 	_getHeader() {
-		if (this.state.category == "") {
+		if (this.state.conditional == "" && this._checkConditionalOptions()) {
+			return this.props.conditionalHeader || "Conditional";
+		} else if (this.state.category == "") {
 			return this.props.categoryHeader || "Category";
 		} else if (this.props.isAllowOperator && this.state.operator == "") {
 			return this.props.operatorHeader || "Operator";
@@ -255,7 +307,7 @@ export default class OTokenizer extends Tokenizer {
 	_focusInput() {
 		if (this.typeaheadRef) {
 			var entry = this.typeaheadRef.getInputRef();
-			if (entry) {
+			if (entry && entry.focus) {
 				entry.focus();
 			}
 		}
@@ -302,8 +354,19 @@ export default class OTokenizer extends Tokenizer {
 			return;
 		}
 		let { isAllowOperator } = this.props;
+		const closeBracket = this.state.conditional && this.state.conditional.includes(')') ? true : false;
+		if (this.state.conditional == "" && this._checkConditionalOptions()) {
+			var val = this._checkSpeacialChar(value) ? value : value + " ( " ;
+			this.state.conditional = val;
+			this.setState({ conditional: val});
+			this.typeaheadRef.setEntryText("");
+			if (this.props.customQuery && val === " )") {
+				this._addToken({value: val, isAllowOperator: false, closeToken: true});
+			}
+			return;
+		}
 
-		if (this.state.category == "") {
+		if (this.state.category == "" && !closeBracket) {
 			this.state.category = value;
 			this.setState({ category: value });
 			this.typeaheadRef.setEntryText("");
@@ -312,23 +375,40 @@ export default class OTokenizer extends Tokenizer {
 		if (this.state.category !== "" && isAllowOperator) {
 			isAllowOperator = this._getCategoryOperator() !== null;
 		}
-		if (isAllowOperator && this.state.operator == "") {
+		if (isAllowOperator && this.state.operator == "" && !closeBracket) {
 			this.state.operator = value;
 			this.setState({ operator: value });
 			this.typeaheadRef.setEntryText("");
 			return;
 		}
+		this._addToken({value, isAllowOperator});
+	};
+
+	_addToken = ({value, isAllowOperator, closeToken}) => {
 
 		value = {
+			conditional: this.state.conditional,
 			category: this.state.category,
 			value: value
 		};
 
-		this.state.selected.push(value);
+		if (closeToken) {
+			value.value = "";
+			value.operator = "";
+		}
+
+		if (this.state.ediTableTokenId !== null) {
+			this.state.selected[this.state.ediTableTokenId] = value;
+			this.state.ediTableTokenId = null;
+		} else {
+			this.state.selected.push(value);
+		}
 
 		let stateObj = {
 			selected: this.state.selected,
-			category: ""
+			conditional: "",
+			category: "",
+			ediTableTokenId: this.state.ediTableTokenId
 		};
 
 		if (isAllowOperator) {
@@ -347,9 +427,12 @@ export default class OTokenizer extends Tokenizer {
 				Object.assign(stateObj, { options: newOptions });
 			}
 		}
-		this.setState(stateObj, () => this.props.onTokenAdd(this.state.selected));
+		this.setState(stateObj, () => {
+			this.props.onTokenAdd(this.state.selected);
+			this._focusInput();
+		});
 		return;
-	};
+	}
 
 	_onClearAll = () => {
 		if (this.props.disabled) {
@@ -380,34 +463,58 @@ export default class OTokenizer extends Tokenizer {
 		);
 	}
 
-	_getTypeahed({ classList }) {
+	_emptyParentCategoryState = () => {
+		this.setState({"category": ""}, () => {
+			this._focusInput();
+		});
+	}
+
+	getTypeHeadHtmlContainer = (component, uniqKey) => {
 		return (
-			<Typeahead
-				ref={ref => (this.typeaheadRef = ref)}
-				disabled={this.props.disabled}
-				isAllowOperator={this.props.isAllowOperator}
-				onElementFocused={this.onElementFocused}
-				isElemenFocused={this.state.focused}
-				fuzzySearchEmptyMessage={this.props.fuzzySearchEmptyMessage}
-				fuzzySearchKeyAttribute={this._getFuzzySearchKeyAttribute({
-					category: this.state.category
-				})}
-				isAllowSearchDropDownHeader={this.props.isAllowSearchDropDownHeader}
-				renderSearchItem={this.props.renderSearchItem}
-				className={classList}
-				placeholder={this.props.placeholder}
-				customClasses={this.props.customClasses}
-				options={this._getOptionsForTypeahead()}
-				header={this._getHeader()}
-				datatype={this._getInputType()}
-				isAllowCustomValue={this._getAllowCustomValue({
-					category: this.state.category
-				})}
-				defaultValue={this.props.defaultValue}
-				onOptionSelected={this._addTokenForValue}
-				onKeyDown={this._onKeyDown}
-				fromTokenizer={true}
-			/>
+			<div className="filter-input-group" key={uniqKey || new Date().getMilliseconds()}>
+				<div className="filter-conditional">{this.state.conditional}</div>
+				<div className="filter-category">{this.state.category}</div>
+				<div className="filter-operator">{this.state.operator}</div>
+				{ component }
+          	</div>
 		);
+	}
+
+	_getTypeahed({mykey, show}) {
+		var classes = {};
+		classes[this.props.customClasses.typeahead] = !!this.props.customClasses.typeahead;
+		var classList = classNames(classes);
+		var typeHeadComp = 	<Typeahead
+						ref={ref => this.typeaheadRef = ref}
+						disabled={this.props.disabled}
+						isAllowOperator={this.props.isAllowOperator}
+						onElementFocused={this.onElementFocused}
+						isElemenFocused={this.state.focused}
+						fuzzySearchEmptyMessage={this.props.fuzzySearchEmptyMessage}
+						fuzzySearchKeyAttribute={this._getFuzzySearchKeyAttribute({
+							category: this.state.category
+						})}
+						isAllowSearchDropDownHeader={this.props.isAllowSearchDropDownHeader}
+						renderSearchItem={this.props.renderSearchItem}
+						className={classList}
+						placeholder={this.props.placeholder}
+						customClasses={this.props.customClasses}
+						options={this._getOptionsForTypeahead()}
+						header={this._getHeader()}
+						datatype={this._getInputType()}
+						isAllowCustomValue={this._getAllowCustomValue({
+							category: this.state.category
+						})}
+						defaultValue={this.props.defaultValue}
+						onOptionSelected={this._addTokenForValue}
+						onKeyDown={this._onKeyDown}
+						fromTokenizer={true}
+						emptyParentCategoryState={this._emptyParentCategoryState}
+						customQuery={this.props.customQuery}
+						bracketHasClosed={this._bracketHasClosed}
+						updateParentInputText={this.props.updateParentInputText}
+						ediTableTokenId={this.state.ediTableTokenId}
+					/>;
+		return 	show ? this.getTypeHeadHtmlContainer(typeHeadComp, mykey) : typeHeadComp;
 	}
 }

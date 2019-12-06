@@ -6,7 +6,7 @@ import TypeaheadSelector from "./selector";
 import KeyEvent from "../keyevent";
 import fuzzy from "fuzzy";
 import DatePicker from "../../react-datepicker/datepicker.js";
-import classNames from "classNames";
+import classNames from "classnames";
 
 /**
  * A "typeahead", an auto-completing text input
@@ -70,9 +70,15 @@ export default class Typeahead extends Component {
 
       // A valid typeahead value
       selection: null,
-      focused: false
+      focused:  this.props.isElemenFocused || false
     };
     this.fuzzySearchKeyAttribute = this.props.fuzzySearchKeyAttribute;
+  }
+
+  componentDidMount () {
+    if (this.props.isElemenFocused) {
+      this.entryRef.focus();
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -175,15 +181,22 @@ export default class Typeahead extends Component {
     this.props.onOptionSelected(option);
   }
 
-  _onTextEntryUpdated = () => {
+  _onTextEntryUpdated = (val) => {
     var value = "";
     if (this.entryRef != null) {
       value = this.entryRef.value;
+    }
+    if (this.state.datatype === "custom") {
+      value = val;
     }
     this.setState({
       visible: this.getOptionsForValue(value, this.state.options),
       selection: null,
       entryValue: value
+    }, () => {
+      if (this.state.datatype === "custom" && val !== undefined) {
+        this.props.onOptionSelected(value);
+      }
     });
   };
 
@@ -225,9 +238,11 @@ export default class Typeahead extends Component {
       // If no options were provided so we can match on anything
       if (this.props.options.length === 0) {
         this._onOptionSelected(this.state.entryValue);
-      } else if (this.props.options.indexOf(this.state.entryValue) > -1 || (this.state.entryValue.trim() != "" && this.props.isAllowCustomValue)) {
+      } else if (this.props.options.indexOf(this.state.entryValue) > -1 || (this.state.entryValue && this.state.entryValue.trim() != "" && this.props.isAllowCustomValue)) {
         // If what has been typed in is an exact match of one of the options
         this._onOptionSelected(this.state.entryValue);
+      } else if (this.props.customQuery && this.props.bracketHasClosed()) {
+        this.props.updateParentInputText();
       }
     }
 
@@ -251,9 +266,8 @@ export default class Typeahead extends Component {
   _onFocus = event => {
     if (this.props.onElementFocused) {
       this.props.onElementFocused({ focused: true });
-    } else {
-      this.setState({ focused: true });
     }
+    this.setState({ focused: true });
   };
 
   isDescendant(parent, child) {

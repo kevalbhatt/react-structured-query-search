@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import propTypes from "prop-types";
 import TypeaheadOption from "./option";
-import classNames from "classNames";
+import classNames from "classnames";
 
 /**
  * Container for the options rendered as part of the autocompletion process

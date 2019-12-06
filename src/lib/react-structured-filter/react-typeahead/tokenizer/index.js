@@ -3,7 +3,7 @@ import propTypes from "prop-types";
 import Token from "./token";
 import KeyEvent from "../keyevent";
 import Typeahead from "../typeahead";
-import classNames from "classNames";
+import classNames from "classnames";
 
 /**
  * A typeahead that, when an option is selected, instead of simply filling
@@ -49,10 +49,12 @@ export default class TypeaheadTokenizer extends Component {
     this.skipCategorySet = new Set();
     this.state = {
       selected: [],
+      conditional: "",
       category: "",
       operator: "",
       options: this.props.options,
-      focused: false
+      focused: this.props.autoFocus || false,
+      ediTableTokenId: null
     };
     this.state.selected = this.getDefaultSelectedValue();
   }
@@ -75,13 +77,16 @@ export default class TypeaheadTokenizer extends Component {
         (typeof selected.value == "string" ? selected.value : selected.value[fuzzySearchKeyAttribute]) +
         index;
       return (
-        <Token
+        this.state.ediTableTokenId === index ? this._getTypeahed ({mykey, show: true}):
+       <Token
           key={mykey}
           className={classList}
           renderTokenItem={this.props.renderTokenItem}
           fuzzySearchKeyAttribute={fuzzySearchKeyAttribute}
           fuzzySearchIdAttribute={this.props.fuzzySearchIdAttribute}
           onRemoveToken={this._removeTokenForValue}
+          onEditToken={this._editTokenForValue.bind(this)}
+          {...this.props}
         >
           {selected}
         </Token>
@@ -151,7 +156,6 @@ export default class TypeaheadTokenizer extends Component {
     if (event.keyCode !== KeyEvent.DOM_VK_BACK_SPACE) {
       return;
     }
-
     // Remove token ONLY when bksp pressed at beginning of line
     // without a selection
     var entry = this.typeaheadRef.getInputRef();
@@ -160,9 +164,14 @@ export default class TypeaheadTokenizer extends Component {
         this.setState({ operator: "" });
       } else if (this.state.category != "") {
         this.setState({ category: "" });
+      } else if (this.state.conditional != "") {
+        this.setState({ conditional: "" });
       } else {
         // No tokens
         if (!this.state.selected.length) {
+          if (this.props.emptyParentCategoryState) {
+            this.props.emptyParentCategoryState();
+          }
           return;
         }
         this._removeTokenForValue(this.state.selected[this.state.selected.length - 1]);
@@ -183,6 +192,11 @@ export default class TypeaheadTokenizer extends Component {
 
     return;
   };
+
+  _editTokenForValue = value => {
+    const index = this.state.selected.indexOf(value);
+    this.setState({ ediTableTokenId: index}, () => setTimeout(() => {this._focusInput()}, 0));
+  }
 
   _addTokenForValue = value => {
     if (this.state.category == "") {
@@ -224,7 +238,7 @@ export default class TypeaheadTokenizer extends Component {
     }
   }
 
-  _getTypeahed({ classList }) {
+  _getTypeahed() {
     return (
       <Typeahead
         ref={ref => (this.typeaheadRef = ref)}
@@ -242,24 +256,30 @@ export default class TypeaheadTokenizer extends Component {
   }
 
   render() {
-    var classes = {};
-    classes[this.props.customClasses.typeahead] = !!this.props.customClasses.typeahead;
-    var classList = classNames(classes);
+    var classes = {
+      'filter-tokenizer': true
+    };
+    classes[this.props.customClasses.query] = this.props.customClasses.query;
+    var classList = classNames(classes, {
+      "padding-for-clear-all" : this.props.isAllowClearAll,
+      "disabled": this.props.disabled
+    });
     return (
       <div
-        className={`filter-tokenizer ${this.props.isAllowClearAll ? "padding-for-clear-all" : ""} ${this.props.disabled ? "disabled" : ""}`}
+        className={classList}
         ref={node => {
           this.node = node;
         }}
       >
         <div className="token-collection" onClick={this.onClickOfDivFocusInput}>
-          {this._renderTokens()}
-          <div className="filter-input-group">
-            <div className="filter-category">{this.state.category} </div>
-            <div className="filter-operator">{this.state.operator} </div>
-
-            {this._getTypeahed({ classList })}
-          </div>
+          { this._renderTokens()}
+          { this.state.ediTableTokenId === null && <div className="filter-input-group">
+              <div className="filter-conditional">{this.state.conditional}</div>
+              <div className="filter-category">{this.state.category}</div>
+              <div className="filter-operator">{this.state.operator}</div>
+              {this._getTypeahed ({show: false})}
+            </div>
+          }
         </div>
         {this.props.isAllowClearAll ? this._getClearAllButton() : null}
       </div>

@@ -12,21 +12,24 @@ export default class App extends Component {
 		// NOTE: The operator will seen to UI only if props isAllowOperator={true}
 		this.options = [
 			{
+				conditional:null,
 				category: "Symbol",
 				type: "textoptions",
 				operator: ["==", "!="],
 				options: this.getSymbolOptions
 			},
 			{
+				conditional:null,
 				category: "Name",
 				type: "text",
 				isAllowDuplicateCategories: false,
-				operator: () => null
+				operator: null
 			},
-			{ category: "Price", type: "number" },
-			{ category: "MarketCap", type: "number" },
-			{ category: "IPO", type: "date" },
+			{ conditional:null, category: "Price", type: "number" },
+			{ conditional:null, category: "MarketCap", type: "number" },
+			{ conditional:null, category: "IPO", type: "date" },
 			{
+				conditional:null,
 				category: "Sector",
 				type: "textoptions",
 				fuzzySearchKeyAttribute: "sectorName",
@@ -36,10 +39,19 @@ export default class App extends Component {
 				options: this.getSectorOptions
 			},
 			{
+				conditional:null,
 				category: "Industry",
 				type: "textoptions",
 				isAllowCustomValue: false,
 				options: this.getIndustryOptions
+			},
+			{
+				conditional: null,
+				category: "Query",
+				type: "custom",
+				isAllowCustomValue: true,
+				options: null,
+				operator: null,
 			}
 		];
 	}
@@ -80,7 +92,7 @@ export default class App extends Component {
 
 	getTokenItem(obj) {
 		let val = obj.children;
-		return `${val["category"]}: val`;
+		return <div>{`testing`}</div>;
 	}
 
 	render() {
@@ -89,12 +101,13 @@ export default class App extends Component {
 				<ReactStructuredQuerySearch
 					isAllowOperator={true}
 					defaultSelected={[
-						{ category: "Sector", value: { sectorName: "Finance", id: 1 } },
-						{ category: "Sector", value: { sectorName: "Consumer Services", id: 2 } },
-						{ category: "Industry", value: { name: "Other Specialty Stores", id: 2 } }
+						{ conditional: null, category: "Sector", value: { sectorName: "Finance", id: 1 } },
+						{ conditional: null, category: "Sector", value: { sectorName: "Consumer Services", id: 2 } },
+						{ conditional: null, category: "Industry", value: { name: "Other Specialty Stores", id: 2 } },
+						// { conditional: null, category: "Query", value: "AND ( Demo == PIL )"}
 					]}
 					options={this.options}
-					//renderTokenItem={this.getTokenItem}
+					// renderTokenItem={this.getTokenItem}
 					updateOptions={({ updatedValues, addedValue }) => {
 						if (addedValue && addedValue.category === "Symbol" && addedValue.value === "TFSC") {
 							this.options.push({
