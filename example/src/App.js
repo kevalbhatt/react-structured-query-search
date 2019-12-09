@@ -52,6 +52,36 @@ export default class App extends Component {
 				isAllowCustomValue: true,
 				options: null,
 				operator: null,
+                                queryOptions: [
+                                        {
+                                                conditional: "AND",
+                                                category: "Demo",
+                                                type: "textoptions",
+                                                operator: ["==", "!="],
+                                                options: ["demo1", "test2"]
+                                        },
+                                        {
+                                                conditional: "OR",
+                                                category: "Sample",
+                                                type: "textoptions",
+                                                operator: ["==", "!="],
+                                                options: ["demo1", "test2"]
+                                        },
+                                        {
+                                                conditional: ",",
+                                                category: "",
+                                                type: "textoptions",
+                                                operator: ["==", "!="],
+                                                options: ["demo1", "test2"]
+                                        },
+                                        {
+                                                conditional: " )",
+                                                category: "",
+                                                type: "text",
+                                                operator: null,
+                                                options: null
+                                        }
+                                ]
 			}
 		];
 	}

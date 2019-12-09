@@ -61,7 +61,10 @@ export default class OTokenizer extends Tokenizer {
 	};
 
 	_getInputType() {
+                var that = this;
 		if (this.state.category === "Query") {
+                        var opt = this.state.options.find(function(f) { return f.category === that.state.category;});
+                        this.queryOptions = opt.queryOptions;
 			return "custom";
 		} else if (this.state.category != "" && (this.props.isAllowOperator && this._getCategoryOperator() !== null ? this.state.operator != "" : true)) {
 			return this._getCategoryType();
@@ -514,6 +517,7 @@ export default class OTokenizer extends Tokenizer {
 						bracketHasClosed={this._bracketHasClosed}
 						updateParentInputText={this.props.updateParentInputText}
 						ediTableTokenId={this.state.ediTableTokenId}
+                                                queryOptions={this.queryOptions}
 					/>;
 		return 	show ? this.getTypeHeadHtmlContainer(typeHeadComp, mykey) : typeHeadComp;
 	}

@@ -57,6 +57,7 @@ export default class TypeaheadTokenizer extends Component {
       ediTableTokenId: null
     };
     this.state.selected = this.getDefaultSelectedValue();
+    this.queryOptions = [];
   }
 
   _renderTokens() {

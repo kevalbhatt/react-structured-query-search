@@ -8,36 +8,7 @@ export default class CustomQueryTokenizer extends Component {
         this.state = {
             selected : []
         };
-        this.options = [
-			{
-                conditional: "AND",
-                category: "Demo",
-				type: "textoptions",
-				operator: this.getOperatorOptions,
-				options: this.getSymbolOptions
-            },
-            {
-                conditional: "OR",
-                category: "Sample",
-				type: "textoptions",
-				operator: this.getOperatorOptions,
-				options: this.getSymbolOptions
-            },
-            {
-                conditional: ",",
-                category: "",
-				type: "textoptions",
-				operator: this.getOperatorOptions,
-				options: this.getSymbolOptions
-            },
-            {
-                conditional: " )",
-                category: "",
-				type: "text",
-				operator: null,
-				options: null
-            }
-		];
+        this.options = this.props.queryOptions || [];
     }
 
     getOperatorOptions () {
