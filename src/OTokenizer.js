@@ -60,12 +60,12 @@ export default class OTokenizer extends Tokenizer {
 		this.setState(val);
 	};
 
-	_getInputType() {
+        _getInputType() {
                 var that = this;
-		if (this.state.category === "Query") {
+                if (this.state.category === "Query" || this.state.category === "EntityFilter" || this.state.category === "ClassificationFilter") {
                         var opt = this.state.options.find(function(f) { return f.category === that.state.category;});
                         this.queryOptions = opt.queryOptions;
-			return "custom";
+                        return "custom";
 		} else if (this.state.category != "" && (this.props.isAllowOperator && this._getCategoryOperator() !== null ? this.state.operator != "" : true)) {
 			return this._getCategoryType();
 		} else {
@@ -132,8 +132,9 @@ export default class OTokenizer extends Tokenizer {
 			for (var i = 0; i < this.state.options.length; i++) {
 				let options = this.state.options[i],
 					category = options.category,
+                                        editItem = this.state.ediTableTokenId !== null ?  this.state.selected[this.state.ediTableTokenId] : {},
 					isAllowCustomValue = options.isAllowCustomValue == undefined ? false : options.isAllowCustomValue,
-					isAllowDuplicateCategories = options.isAllowDuplicateCategories == undefined ? true : options.isAllowDuplicateCategories;
+                                        isAllowDuplicateCategories = (options.isAllowDuplicateCategories == undefined || editItem.category === category) ? true : options.isAllowDuplicateCategories;
 
 				if (isAllowCustomValue == false && this.skipCategorySet && this.skipCategorySet.has(category)) {
 					continue;

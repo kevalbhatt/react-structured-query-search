@@ -13,41 +13,40 @@ export default class App extends Component {
 		this.options = [
 			{
 				conditional:null,
-				category: "Symbol",
+                                category: "Type",
 				type: "textoptions",
 				operator: ["==", "!="],
-				options: this.getSymbolOptions
-			},
-			{
-				conditional:null,
-				category: "Name",
-				type: "text",
 				isAllowDuplicateCategories: false,
-				operator: null
+                                options: this.getSymbolOptions
 			},
-			{ conditional:null, category: "Price", type: "number" },
-			{ conditional:null, category: "MarketCap", type: "number" },
-			{ conditional:null, category: "IPO", type: "date" },
 			{
 				conditional:null,
-				category: "Sector",
+                                category: "Classification",
 				type: "textoptions",
+                                operator: ["==", "!="],
+                                isAllowDuplicateCategories: false,
 				fuzzySearchKeyAttribute: "sectorName",
-				isAllowCustomValue: false,
-				isAllowDuplicateOptions: false,
-				operator: null,
 				options: this.getSectorOptions
 			},
 			{
 				conditional:null,
-				category: "Industry",
+                                category: "Terms",
 				type: "textoptions",
-				isAllowCustomValue: false,
+                                operator: ["==", "!="],
+                                isAllowDuplicateCategories: false,
 				options: this.getIndustryOptions
 			},
 			{
+                                conditional:null,
+                                category: "Label",
+                                type: "text",
+                                isAllowDuplicateCategories: false,
+                                operator: null
+                        },
+                        {
 				conditional: null,
 				category: "Query",
+                                isAllowDuplicateCategories: false,
 				type: "custom",
 				isAllowCustomValue: true,
 				options: null,
@@ -130,12 +129,7 @@ export default class App extends Component {
 			<div className="container">
 				<ReactStructuredQuerySearch
 					isAllowOperator={true}
-					defaultSelected={[
-						{ conditional: null, category: "Sector", value: { sectorName: "Finance", id: 1 } },
-						{ conditional: null, category: "Sector", value: { sectorName: "Consumer Services", id: 2 } },
-						{ conditional: null, category: "Industry", value: { name: "Other Specialty Stores", id: 2 } },
-						// { conditional: null, category: "Query", value: "AND ( Demo == PIL )"}
-					]}
+                                        defaultSelected={[]}
 					options={this.options}
 					// renderTokenItem={this.getTokenItem}
 					updateOptions={({ updatedValues, addedValue }) => {

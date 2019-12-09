@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from 'react';
 
-import ReactStructuredQuerySearch from "react-structured-query-search";
+import Tokenizer from "./OTokenizer";
 
 export default class CustomQueryTokenizer extends Component {
     constructor(props) {
@@ -42,7 +42,7 @@ export default class CustomQueryTokenizer extends Component {
     render() {
         return(
             <Fragment>
-                <ReactStructuredQuerySearch
+                <Tokenizer
 					isAllowOperator={true}
 					defaultSelected={this.state.selected}
 					options={this.options}
