@@ -75,8 +75,12 @@ export default class TypeaheadTokenizer extends Component {
       let mykey =
         selected.category +
         (this.props.isAllowOperator ? selected.operator : "") +
-        (typeof selected.value == "string" ? selected.value : selected.value[fuzzySearchKeyAttribute]) +
-        index;
+        (selected.value ?
+          (typeof selected.value == "string"
+            ? selected.value
+            : selected.value[fuzzySearchKeyAttribute])
+           : "") + index;
+
       return (
         this.state.ediTableTokenId === index ? this._getTypeahed ({mykey, show: true}):
        <Token
@@ -196,7 +200,13 @@ export default class TypeaheadTokenizer extends Component {
 
   _editTokenForValue = value => {
     const index = this.state.selected.indexOf(value);
-    this.setState({ ediTableTokenId: index}, () => setTimeout(() => {this._focusInput()}, 0));
+    this.setState({
+      conditional: value.conditional || '',
+      category: value.category || '',
+      operator: value.operator,
+      value: null,
+      ediTableTokenId: index
+    }, () => setTimeout(() => {this._focusInput()}, 0));
   }
 
   _addTokenForValue = value => {

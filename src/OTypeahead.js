@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Typeahead } from "./lib/react-structured-filter/react-typeahead/react-typeahead";
 import CustomQueryTokenizer from './CustomQueryTokenizer';
@@ -68,6 +68,9 @@ export default class OTypeahead extends Typeahead {
 	}
 
 	_getTypeaheadInput({classList, inputClassList}) {
+                if (this.props.ediTableTokenId !== null) {
+                        inputClassList += ' editMode';
+                }
 		return (
 		  <div className={classList}>
 			{this.state.loadingOptions
@@ -86,16 +89,30 @@ export default class OTypeahead extends Typeahead {
 						updatedInputText={this._onTextEntryUpdated}
 						{...this.props}
 					  />
-					: <input
-						ref={ref => (this.entryRef = ref)}
-						type={this.state.datatype == 'number' ? 'number' : 'text'}
-						placeholder={this.props.placeholder}
-						className={inputClassList}
-						defaultValue={this.state.entryValue}
-						onChange={this._onTextEntryUpdated}
-						onKeyDown={this._onKeyDown}
-						disabled={this.props.disabled}
-					  />}
+                                        : <Fragment>
+                                                <input
+                                                        ref={ref => (this.entryRef = ref)}
+                                                        type={this.state.datatype == 'number' ? 'number' : 'text'}
+                                                        placeholder={this.props.placeholder}
+                                                        className={inputClassList}
+                                                        defaultValue={this.state.entryValue}
+                                                        onChange={this._onTextEntryUpdated}
+                                                        onKeyDown={this._onKeyDown}
+                                                        disabled={this.props.disabled}
+                                                />
+						{
+                                                        this.props.ediTableTokenId !== null && <a
+                                                                className="typeahead-token-close"
+                                                                href="javascript:void(0)"
+                                                                onClick={function(event) {
+                                                                this.props.updatedToken();
+                                                                event.preventDefault();
+                                                                }.bind(this)}
+                                                                >
+                                                                        &#x00d7;
+                                                        </a>
+                                                 }
+                                        </Fragment>}
 				  {this._renderIncrementalSearchResults ()}
 				</span>}
 		  </div>

@@ -60,6 +60,7 @@ export default class CustomQueryTokenizer extends Component {
                     updateParentInputText={this.updateParentInputText.bind(this)}
                     customQuery={true}
                     autoFocus={true}
+                    isAllowClearAll={false}
                 />
             </Fragment>
         );

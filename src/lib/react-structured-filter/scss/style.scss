@@ -372,3 +372,10 @@
 		outline: none;
 	}
 }
+.token-text:hover {
+        cursor: pointer;
+        text-decoration: underline;
+}
+.filter-tokenizer .typeahead input.editMode {
+        width: 90%;
+}

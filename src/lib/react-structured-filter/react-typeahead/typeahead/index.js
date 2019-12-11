@@ -55,6 +55,7 @@ export default class Typeahead extends Component {
     this.entryRef = null;
     this.selRef = null;
     this.inputRef = null;
+    this.fuzzySearchKeyAttribute = this.props.fuzzySearchKeyAttribute;
     this.state = {
       // The set of all options... Does this need to be state?  I guess for lazy load...
       loadingOptions: false,
@@ -72,11 +73,10 @@ export default class Typeahead extends Component {
       selection: null,
       focused:  this.props.isElemenFocused || false
     };
-    this.fuzzySearchKeyAttribute = this.props.fuzzySearchKeyAttribute;
   }
 
   componentDidMount () {
-    if (this.props.isElemenFocused) {
+    if (this.props.isElemenFocused && this.entryRef && this.entryRef.focus) {
       this.entryRef.focus();
     }
   }

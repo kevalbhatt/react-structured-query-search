@@ -63,16 +63,26 @@ export default class Token extends Component {
     } else {
       let val = this.props.children,
        tokenVal = (val.conditional && val.conditional.includes(')')) ? this.getTokenValue() : `"${this.getTokenValue()}"`;
-      return `${val.conditional == undefined ? "" : val.conditional} ${val["category"]} ${val.operator == undefined ? "" : val.operator} ${tokenVal} `;
+      return <Fragment>
+        <span className="token-text" onClick={function(event) {
+          event.stopPropagation();
+          event.preventDefault();
+          this.props.onEditToken(this.props.children);
+        }.bind(this)}>
+          <span className="token-conditional">{val.conditional == undefined ? "" : val.conditional}</span>
+          <span className="token-category">{val["category"]}</span>
+          <span className="token-operator">{val.operator == undefined ? "" : val.operator}</span>
+          <span className="token-value">{tokenVal}</span>
+        </span>
+      </Fragment>;
     }
   }
 
   render() {
     return (
       <div className="typeahead-token">
-        {this._makeCloseButton()}
         {this.getTokenItem()}
-        {this._makeEditButton()}
+        {this._makeCloseButton()}
       </div>
     );
   }

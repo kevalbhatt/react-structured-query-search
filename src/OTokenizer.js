@@ -200,7 +200,7 @@ export default class OTokenizer extends Tokenizer {
 	}
 
 	filterOptionsValue({ options, category = this.state.category, selected = this.state.selected, fromDefaultValue }) {
-		if (this._getAllowDuplicateOptions({ constategory: category }) == false) {
+                if (this._getAllowDuplicateOptions({ category: category }) == false) {
 			if (selected.length && category != "") {
 				let optionsList = [];
 				if (options && options.length) {
@@ -219,6 +219,9 @@ export default class OTokenizer extends Tokenizer {
 					});
 					options.forEach(val => {
 						let foundOption = listToFindOptionOnIt.find(o => {
+                                                        if(this.state.ediTableTokenId !== null  && o.value[fuzzySearchKeyAttribute] === val[fuzzySearchKeyAttribute]){
+                                                                return false;
+                                                        }
 							if (typeof val === "object") {
 								return o.value[fuzzySearchKeyAttribute] == val[fuzzySearchKeyAttribute];
 							} else {
@@ -484,6 +487,18 @@ export default class OTokenizer extends Tokenizer {
 		);
 	}
 
+        _updatedToken() {
+                this.setState({
+                        conditional: '',
+                        category: '',
+                        operator: '',
+                        ediTableTokenId: null
+                }, () => {
+                        this.props.onTokenAdd(this.state.selected);
+                        this._focusInput();
+                });
+        }
+
 	_getTypeahed({mykey, show}) {
 		var classes = {};
 		classes[this.props.customClasses.typeahead] = !!this.props.customClasses.typeahead;
@@ -516,10 +531,12 @@ export default class OTokenizer extends Tokenizer {
 						emptyParentCategoryState={this._emptyParentCategoryState}
 						customQuery={this.props.customQuery}
 						bracketHasClosed={this._bracketHasClosed}
-						updateParentInputText={this.props.updateParentInputText}
-						ediTableTokenId={this.state.ediTableTokenId}
+                                                updateParentInputText={this.props.updateParentInputText}
+                                                ediTableTokenId={this.state.ediTableTokenId}
                                                 queryOptions={this.queryOptions}
-					/>;
-		return 	show ? this.getTypeHeadHtmlContainer(typeHeadComp, mykey) : typeHeadComp;
-	}
+                                                ediTableTokenId={this.state.ediTableTokenId}
+                                                updatedToken={this._updatedToken.bind(this)}
+                                        />;
+                return 	show ? this.getTypeHeadHtmlContainer(typeHeadComp, mykey) : typeHeadComp;
+        }
 }

@@ -31,12 +31,12 @@ export default class App extends Component {
 			{
 				conditional:null,
                                 category: "Terms",
-				type: "textoptions",
+                                type: "textoptions",
                                 operator: ["==", "!="],
-                                isAllowDuplicateCategories: false,
-				options: this.getIndustryOptions
-			},
-			{
+                                isAllowDuplicateCategories: true,
+                                options: this.getIndustryOptions
+                        },
+                        {
                                 conditional:null,
                                 category: "Label",
                                 type: "text",
@@ -116,7 +116,7 @@ export default class App extends Component {
 	 * @return {[array]}
 	 */
 	getIndustryOptions() {
-		return [{ name: "Business Services", id: 1 }, { name: "Other Specialty Stores", id: 2 }];
+                return [{ name: "Business Services", id: 1 }, { name: "Other Specialty Stores", id: 2 }, { name: "demo test", id: 3 }];
 	}
 
 	getTokenItem(obj) {
