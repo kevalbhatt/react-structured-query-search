@@ -9,27 +9,24 @@ export default class App extends Component {
 		this.state = {
 			SymbolData: []
 		};
-		// NOTE: The operator will seen to UI only if props isAllowOperator={true}
-		this.options = [
-			{
-				conditional:null,
+                // NOTE: The operator will seen to UI only if props isAllowOperator={true}
+                this.options = [
+                        {
                                 category: "Type",
-				type: "textoptions",
-				operator: ["==", "!="],
+                                type: "textoptions",
+                                operator: ["==", "!="],
 				isAllowDuplicateCategories: false,
                                 options: this.getSymbolOptions
-			},
-			{
-				conditional:null,
+                        },
+                        {
                                 category: "Classification",
-				type: "textoptions",
+                                type: "textoptions",
                                 operator: ["==", "!="],
                                 isAllowDuplicateCategories: false,
 				fuzzySearchKeyAttribute: "sectorName",
-				options: this.getSectorOptions
-			},
-			{
-				conditional:null,
+                                options: this.getSectorOptions
+                        },
+                        {
                                 category: "Terms",
                                 type: "textoptions",
                                 operator: ["==", "!="],
@@ -37,14 +34,12 @@ export default class App extends Component {
                                 options: this.getIndustryOptions
                         },
                         {
-                                conditional:null,
                                 category: "Label",
                                 type: "text",
                                 isAllowDuplicateCategories: false,
                                 operator: null
                         },
                         {
-                                conditional: null,
                                 category: "Query",
                                 isAllowDuplicateCategories: false,
                                 type: "query",
@@ -53,29 +48,25 @@ export default class App extends Component {
                                 operator: null,
                                 queryOptions: [
                                         {
-                                                conditional: "AND",
                                                 category: "Demo",
                                                 type: "textoptions",
                                                 operator: ["==", "!="],
                                                 options: ["demo1", "test2"]
                                         },
                                         {
-                                                conditional: "OR",
                                                 category: "Sample",
                                                 type: "textoptions",
                                                 operator: ["==", "!="],
                                                 options: ["demo1", "test2"]
                                         },
                                         {
-                                                conditional: ",",
-                                                category: "",
+                                                category: "Test",
                                                 type: "textoptions",
                                                 operator: ["==", "!="],
                                                 options: ["demo1", "test2"]
                                         },
                                         {
-                                                conditional: " )",
-                                                category: "",
+                                                category: "Jason",
                                                 type: "text",
                                                 operator: null,
                                                 options: null

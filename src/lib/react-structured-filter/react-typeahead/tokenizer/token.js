@@ -12,7 +12,7 @@ export default class Token extends Component {
   };
 
   _makeCloseButton() {
-    if (!this.props.onRemoveToken) {
+    if (!this.props.onRemoveToken || this.props.ediTableTokenId !== null) {
       return "";
     }
     return (
@@ -62,7 +62,9 @@ export default class Token extends Component {
       return this.props.renderTokenItem(this.props);
     } else {
       let val = this.props.children,
-       tokenVal = (val.conditional && val.conditional.includes(')')) ? this.getTokenValue() : `"${this.getTokenValue()}"`;
+        tokenVal = (val.conditional && val.conditional.includes(')')) ? this.getTokenValue() : `"${this.getTokenValue()}"`,
+        type = this.props.customQuery ? 'query' : this.props.options.find((o) => o.category === val.category).type,
+        addColen = (type !== 'query' && (val.operator === undefined || val.operator === null)) ? ':' : '';
       return <Fragment>
         <span className="token-text" onClick={function(event) {
           event.stopPropagation();
@@ -70,7 +72,7 @@ export default class Token extends Component {
           this.props.onEditToken(this.props.children);
         }.bind(this)}>
           <span className="token-conditional">{val.conditional == undefined ? "" : val.conditional}</span>
-          <span className="token-category">{val["category"]}</span>
+          <span className="token-category">{val["category"]}{addColen}</span>
           <span className="token-operator">{val.operator == undefined ? "" : val.operator}</span>
           <span className="token-value">{tokenVal}</span>
         </span>

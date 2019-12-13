@@ -9,6 +9,7 @@ export default class CustomQueryTokenizer extends Component {
             selected : []
         };
         this.options = this.props.queryOptions || [];
+        this.conditionalList = this.props.conditionalList || [",", "AND","OR"," )"];
     }
 
     getOperatorOptions () {
@@ -68,6 +69,7 @@ export default class CustomQueryTokenizer extends Component {
                     isAllowClearAll={false}
                     ediTableTokenId={this.props.ediTableTokenId}
                     updateParentToken={this.updateParentToken}
+                    conditionalList={this.conditionalList}
                 />
             </Fragment>
         );

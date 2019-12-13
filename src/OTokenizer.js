@@ -50,7 +50,7 @@ export default class OTokenizer extends Tokenizer {
 			) {
 				return;
 			}
-			if (this.state.focused === true && this.typeaheadRef && !this.typeaheadRef.isOptionsLoading()) {
+                        if (this.state.focused === true && this.typeaheadRef && !this.typeaheadRef.isOptionsLoading() && (this.props.ediTableTokenId === null || this.props.ediTableTokenId === undefined)) {
 				this.setState({ focused: false });
 			}
 		}
@@ -82,9 +82,12 @@ export default class OTokenizer extends Tokenizer {
 		}
 	}
 
-	_checkConditionalOptions () {
-		return this.state.options.filter(function(o) {
-			return o.conditional !== null && o.conditional !== undefined && o.conditional !== "";
+        _checkConditionalOptions (val) {
+                if (!this.props.conditionalList) {
+                        return false;
+                }
+                return this.props.conditionalList.filter(function(o) {
+                        return o !== null && o !== undefined && o !== "";
 		}).length > 0 ? true : false;
 	}
 
@@ -120,9 +123,8 @@ export default class OTokenizer extends Tokenizer {
 		const closeBracket = this.state.conditional && this.state.conditional.includes(')') ? true : false;
 		if (this.state.conditional == "" && this._checkConditionalOptions()) {
 			var conditional = [];
-			for (var i = 0; i < this.state.options.length; i++) {
-				var options = this.state.options[i],
-					condition = options.conditional;
+                        for (var i = 0; i < this.props.conditionalList.length; i++) {
+                                var condition = this.props.conditionalList[i];
 					if (condition && this._showCloseBracketOptions(condition)) {
 						conditional.push(condition);
 					}
@@ -360,13 +362,13 @@ export default class OTokenizer extends Tokenizer {
 	_addTokenForValue = value => {
 		if (this.props.disabled) {
 			return;
-		}
-		let { isAllowOperator } = this.props;
+                }
+                let { isAllowOperator } = this.props;
                 const closeBracket = (value && value.toString() !== "[object Object]" && value.includes(')')) ? true : false;
-		if (this.state.conditional == "" && this._checkConditionalOptions()) {
-			var val = this._checkSpeacialChar(value) ? value : value + " ( " ;
-			this.state.conditional = val;
-			this.setState({ conditional: val});
+                if (this.state.conditional == "" && this._checkConditionalOptions(value)) {
+                        var val = this._checkSpeacialChar(value) ? value : value + " ( " ;
+                        this.state.conditional = val;
+                        this.setState({ conditional: val});
 			this.typeaheadRef.setEntryText("");
 			if (this.props.customQuery && val === " )") {
 				this._addToken({value: val, isAllowOperator: false, closeToken: true});

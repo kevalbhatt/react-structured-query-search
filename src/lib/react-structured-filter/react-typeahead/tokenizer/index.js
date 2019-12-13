@@ -91,6 +91,7 @@ export default class TypeaheadTokenizer extends Component {
           fuzzySearchIdAttribute={this.props.fuzzySearchIdAttribute}
           onRemoveToken={this._removeTokenForValue}
           onEditToken={this._editTokenForValue.bind(this)}
+          ediTableTokenId={this.state.ediTableTokenId}
           {...this.props}
         >
           {selected}
@@ -205,7 +206,8 @@ export default class TypeaheadTokenizer extends Component {
       category: value.category || '',
       operator: value.operator,
       value: null,
-      ediTableTokenId: index
+      ediTableTokenId: index,
+      focused: true
     }, () => setTimeout(() => {this._focusInput()}, 0));
   }
 
