@@ -29,7 +29,7 @@ export default class App extends Component {
                         {
                                 category: "Terms",
                                 type: "textoptions",
-                                operator: ["==", "!="],
+                                operator: null,
                                 isAllowDuplicateCategories: true,
                                 options: this.getIndustryOptions
                         },
@@ -51,24 +51,24 @@ export default class App extends Component {
                                                 category: "Demo",
                                                 type: "textoptions",
                                                 operator: ["==", "!="],
-                                                options: ["demo1", "test2"]
+                                                options: ["demo_1", "demo_2"]
                                         },
                                         {
                                                 category: "Sample",
                                                 type: "textoptions",
                                                 operator: ["==", "!="],
-                                                options: ["demo1", "test2"]
+                                                options: ["Sample_1", "Sample_2"]
                                         },
                                         {
                                                 category: "Test",
                                                 type: "textoptions",
                                                 operator: ["==", "!="],
-                                                options: ["demo1", "test2"]
+                                                options: ["Test_1", "Test_2"]
                                         },
                                         {
                                                 category: "Jason",
                                                 type: "text",
-                                                operator: null,
+                                                operator: ["==", "!="],
                                                 options: null
                                         }
                                 ]

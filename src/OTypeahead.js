@@ -102,6 +102,7 @@ export default class OTypeahead extends Typeahead {
 								parentCallBack={this.props.parentCallBack}
 								disabled={this.props.disabled}
 								updatedInputText={this._onTextEntryUpdated}
+                                                                defaultSelected={this.props.queryValueToEdit}
 								{...this.props}
 							/>
 					: 	<Fragment>

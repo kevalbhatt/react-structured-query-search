@@ -6,10 +6,58 @@ export default class CustomQueryTokenizer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selected : []
+            selected : this.getSelectedValueArray()
         };
         this.options = this.props.queryOptions || [];
         this.conditionalList = this.props.conditionalList || [",", "AND","OR"," )"];
+    }
+
+    getSelectedValueArray () {
+        if (!this.props.defaultSelected) {
+            return [];
+        }
+        const strArray = this.getTrimedSplitData(this.props.defaultSelected, ' ('), itemsList = [];
+        let obj = {};
+        const recursionFunc = (arr, sideEffect) => {
+            arr.forEach((str, i) => {
+                if (["AND","OR"].includes(str)) {
+                    obj.conditional = str + ' (';
+                }
+                if (/[,]/.test(str)) {
+                    return recursionFunc(this.getTrimedSplitData(str, ','), ',');
+                }
+                if (/[!=<>]/.test(str)) {
+                    if (sideEffect && i > 0) {
+                        obj.conditional = sideEffect;
+                    }
+                    const o = this.getTrimedSplitData(str, ' ');
+                    obj.category = o[0];
+                    obj.operator = o[1];
+                    obj.value = o[2];
+                    if (Object.keys(obj).length === 4 && o.length > 3) {
+                        itemsList.push(obj);
+                        obj = {};
+                        return recursionFunc(o.slice(3));
+                    }
+                }
+                if (/[)]/.test(str) && !/[a-zA-Z0-9]/.test(str)) {
+                    obj.conditional = str;
+                    obj.category = '';
+                    obj.operator = '';
+                    obj.value = '';
+                }
+                if (Object.keys(obj).length === 4) {
+                    itemsList.push(obj);
+                    obj = {};
+                }
+            });
+        };
+        recursionFunc(strArray);
+        return itemsList;
+    }
+
+    getTrimedSplitData (str, expression) {
+        return str.split(expression).filter((f) => f.trim() !== '')
     }
 
     getOperatorOptions () {

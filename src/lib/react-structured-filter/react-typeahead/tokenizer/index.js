@@ -54,7 +54,8 @@ export default class TypeaheadTokenizer extends Component {
       operator: "",
       options: this.props.options,
       focused: this.props.autoFocus || false,
-      ediTableTokenId: null
+      ediTableTokenId: null,
+      queryValueToEdit: null
     };
     this.state.selected = this.getDefaultSelectedValue();
     this.queryOptions = [];
@@ -180,6 +181,9 @@ export default class TypeaheadTokenizer extends Component {
           }
           return;
         }
+        if (this.state.ediTableTokenId === null || this.state.ediTableTokenId === undefined) {
+          this.state.queryValueToEdit = null;
+        }
         this.state.ediTableTokenId === null && this._removeTokenForValue(this.state.selected[this.state.selected.length - 1]);
       }
       event.preventDefault();
@@ -200,14 +204,20 @@ export default class TypeaheadTokenizer extends Component {
   };
 
   _editTokenForValue = value => {
-    const index = this.state.selected.indexOf(value);
+    const index = this.state.selected.indexOf(value),
+      type = this.state.options.find((o) => o.category === value.category).type;
+      let queryVal = null;
+    if (type === 'query') {
+      queryVal = value.value.trim().substr(0, value.value.trim().length - 1);
+    }
     this.setState({
       conditional: value.conditional || '',
       category: value.category || '',
       operator: value.operator,
       value: null,
       ediTableTokenId: index,
-      focused: true
+      focused: true,
+      queryValueToEdit: queryVal
     }, () => setTimeout(() => {this._focusInput()}, 0));
   }
 

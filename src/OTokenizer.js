@@ -541,6 +541,7 @@ export default class OTokenizer extends Tokenizer {
                                                 queryOptions={this.queryOptions}
                                                 updatedToken={this._updatedToken}
                                                 updateParentToken={this.props.updateParentToken}
+                                                queryValueToEdit={this.state.queryValueToEdit}
                                         />;
                 return 	show ? this.getTypeHeadHtmlContainer(typeHeadComp, mykey) : typeHeadComp;
         }
