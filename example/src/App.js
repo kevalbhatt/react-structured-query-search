@@ -44,13 +44,13 @@ export default class App extends Component {
                                 operator: null
                         },
                         {
-				conditional: null,
-				category: "Query",
+                                conditional: null,
+                                category: "Query",
                                 isAllowDuplicateCategories: false,
-				type: "custom",
-				isAllowCustomValue: true,
-				options: null,
-				operator: null,
+                                type: "query",
+                                isAllowCustomValue: true,
+                                options: null,
+                                operator: null,
                                 queryOptions: [
                                         {
                                                 conditional: "AND",

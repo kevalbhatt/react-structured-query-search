@@ -39,7 +39,17 @@ export default class CustomQueryTokenizer extends Component {
         this.props.updatedInputText(str);
     }
 
+    updateParentToken = () => {
+        this.props.updatedToken();
+    }
+
     render() {
+        var classList = {
+            input: "filter-tokenizer-text-input",
+            results: "filter-tokenizer-list__container",
+            listItem: "filter-tokenizer-list__item",
+            query: "custom-query"
+        };
         return(
             <Fragment>
                 <Tokenizer
@@ -50,17 +60,14 @@ export default class CustomQueryTokenizer extends Component {
                     conditionalHeader={"Conditional"}
                     categoryHeader={'Selection'}
 					onTokenAdd={val => console.log(val, 'onTokenAdd')}
-					customClasses={{
-						input: "filter-tokenizer-text-input",
-						results: "filter-tokenizer-list__container",
-                        listItem: "filter-tokenizer-list__item",
-                        query: "custom-query"
-                    }}
+                                        customClasses={classList}
                     emptyParentCategoryState={this.props.emptyParentCategoryState}
                     updateParentInputText={this.updateParentInputText.bind(this)}
                     customQuery={true}
                     autoFocus={true}
                     isAllowClearAll={false}
+                    ediTableTokenId={this.props.ediTableTokenId}
+                    updateParentToken={this.updateParentToken}
                 />
             </Fragment>
         );

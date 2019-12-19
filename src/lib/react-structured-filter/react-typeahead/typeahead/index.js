@@ -186,7 +186,7 @@ export default class Typeahead extends Component {
     if (this.entryRef != null) {
       value = this.entryRef.value;
     }
-    if (this.state.datatype === "custom") {
+    if (this.state.datatype === "query") {
       value = val;
     }
     this.setState({
@@ -194,7 +194,7 @@ export default class Typeahead extends Component {
       selection: null,
       entryValue: value
     }, () => {
-      if (this.state.datatype === "custom" && val !== undefined) {
+      if (this.state.datatype === "query" && val !== undefined) {
         this.props.onOptionSelected(value);
       }
     });

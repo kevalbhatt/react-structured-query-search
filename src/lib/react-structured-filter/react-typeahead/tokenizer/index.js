@@ -179,7 +179,7 @@ export default class TypeaheadTokenizer extends Component {
           }
           return;
         }
-        this._removeTokenForValue(this.state.selected[this.state.selected.length - 1]);
+        this.state.ediTableTokenId === null && this._removeTokenForValue(this.state.selected[this.state.selected.length - 1]);
       }
       event.preventDefault();
     }

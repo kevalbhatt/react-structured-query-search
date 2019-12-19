@@ -58,17 +58,18 @@ export default class OTokenizer extends Tokenizer {
 
 	onElementFocused = val => {
 		this.setState(val);
-	};
+        };
 
         _getInputType() {
-                var that = this;
-                if (this.state.category === "Query" || this.state.category === "EntityFilter" || this.state.category === "ClassificationFilter") {
+                var that = this,
+                type = this._getCategoryType();
+                if (this.state.category !== "" && type === 'query') {
                         var opt = this.state.options.find(function(f) { return f.category === that.state.category;});
                         this.queryOptions = opt.queryOptions;
-                        return "custom";
-		} else if (this.state.category != "" && (this.props.isAllowOperator && this._getCategoryOperator() !== null ? this.state.operator != "" : true)) {
-			return this._getCategoryType();
-		} else {
+                        return type;
+                } else if (this.state.category != "" && (this.props.isAllowOperator && this._getCategoryOperator() !== null ? this.state.operator != "" : true)) {
+                        return this._getCategoryType();
+                } else {
 			return "text";
 		}
 	}
@@ -361,7 +362,7 @@ export default class OTokenizer extends Tokenizer {
 			return;
 		}
 		let { isAllowOperator } = this.props;
-		const closeBracket = this.state.conditional && this.state.conditional.includes(')') ? true : false;
+                const closeBracket = (value && value.toString() !== "[object Object]" && value.includes(')')) ? true : false;
 		if (this.state.conditional == "" && this._checkConditionalOptions()) {
 			var val = this._checkSpeacialChar(value) ? value : value + " ( " ;
 			this.state.conditional = val;
@@ -484,10 +485,10 @@ export default class OTokenizer extends Tokenizer {
 				<div className="filter-operator">{this.state.operator}</div>
 				{ component }
           	</div>
-		);
-	}
+                );
+        }
 
-        _updatedToken() {
+        _updatedToken = () => {
                 this.setState({
                         conditional: '',
                         category: '',
@@ -502,8 +503,10 @@ export default class OTokenizer extends Tokenizer {
 	_getTypeahed({mykey, show}) {
 		var classes = {};
 		classes[this.props.customClasses.typeahead] = !!this.props.customClasses.typeahead;
-		var classList = classNames(classes);
-		var typeHeadComp = 	<Typeahead
+                var classList = classNames(classes),
+                editId = (this.props.ediTableTokenId !== null  && this.props.ediTableTokenId !== undefined) ? this.props.ediTableTokenId : this.state.ediTableTokenId,
+                placeholder = this.state.category.toLowerCase() || this.props.placeholder,
+                typeHeadComp = 	<Typeahead
 						ref={ref => this.typeaheadRef = ref}
 						disabled={this.props.disabled}
 						isAllowOperator={this.props.isAllowOperator}
@@ -516,7 +519,7 @@ export default class OTokenizer extends Tokenizer {
 						isAllowSearchDropDownHeader={this.props.isAllowSearchDropDownHeader}
 						renderSearchItem={this.props.renderSearchItem}
 						className={classList}
-						placeholder={this.props.placeholder}
+                                                placeholder={placeholder}
 						customClasses={this.props.customClasses}
 						options={this._getOptionsForTypeahead()}
 						header={this._getHeader()}
@@ -529,13 +532,13 @@ export default class OTokenizer extends Tokenizer {
 						onKeyDown={this._onKeyDown}
 						fromTokenizer={true}
 						emptyParentCategoryState={this._emptyParentCategoryState}
-						customQuery={this.props.customQuery}
-						bracketHasClosed={this._bracketHasClosed}
+                                                customQuery={this.props.customQuery}
+                                                bracketHasClosed={this._bracketHasClosed}
                                                 updateParentInputText={this.props.updateParentInputText}
-                                                ediTableTokenId={this.state.ediTableTokenId}
+                                                ediTableTokenId={editId}
                                                 queryOptions={this.queryOptions}
-                                                ediTableTokenId={this.state.ediTableTokenId}
-                                                updatedToken={this._updatedToken.bind(this)}
+                                                updatedToken={this._updatedToken}
+                                                updateParentToken={this.props.updateParentToken}
                                         />;
                 return 	show ? this.getTypeHeadHtmlContainer(typeHeadComp, mykey) : typeHeadComp;
         }
