@@ -59,6 +59,7 @@ export default class TypeaheadTokenizer extends Component {
     };
     this.state.selected = this.getDefaultSelectedValue();
     this.queryOptions = [];
+    this.queryResultObj = {};
   }
 
   _renderTokens() {
@@ -300,7 +301,7 @@ export default class TypeaheadTokenizer extends Component {
               <div className="filter-conditional">{this.state.conditional}</div>
               <div className="filter-category">{this.state.category}</div>
               <div className="filter-operator">{this.state.operator}</div>
-              {this._getTypeahed ({show: false})}
+              {this._getTypeahed({show: false})}
             </div>
           }
         </div>

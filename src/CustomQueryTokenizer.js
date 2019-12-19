@@ -9,7 +9,7 @@ export default class CustomQueryTokenizer extends Component {
             selected : this.getSelectedValueArray()
         };
         this.options = this.props.queryOptions || [];
-        this.conditionalList = this.props.conditionalList || [",", "AND","OR"," )"];
+        this.conditionalList = [",", "AND","OR"," )"];
     }
 
     getSelectedValueArray () {
@@ -85,7 +85,7 @@ export default class CustomQueryTokenizer extends Component {
             str += this.trimText(s.operator);
             str += this.trimText(s.value);
         });
-        this.props.updatedInputText(str);
+        this.props.updatedInputText(str, this.state.selected);
     }
 
     updateParentToken = () => {
@@ -108,7 +108,7 @@ export default class CustomQueryTokenizer extends Component {
 					renderTokenItem={this.getTokenItem}
                     conditionalHeader={"Conditional"}
                     categoryHeader={'Selection'}
-					onTokenAdd={val => console.log(val, 'onTokenAdd')}
+					// onTokenAdd={val => console.log(val, 'onTokenAdd')}
                                         customClasses={classList}
                     emptyParentCategoryState={this.props.emptyParentCategoryState}
                     updateParentInputText={this.updateParentInputText.bind(this)}

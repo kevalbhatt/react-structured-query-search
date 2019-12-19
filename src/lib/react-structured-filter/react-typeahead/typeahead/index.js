@@ -181,7 +181,7 @@ export default class Typeahead extends Component {
     this.props.onOptionSelected(option);
   }
 
-  _onTextEntryUpdated = (val) => {
+  _onTextEntryUpdated = (val, queryResult) => {
     var value = "";
     if (this.entryRef != null) {
       value = this.entryRef.value;
@@ -195,7 +195,7 @@ export default class Typeahead extends Component {
       entryValue: value
     }, () => {
       if (this.state.datatype === "query" && val !== undefined) {
-        this.props.onOptionSelected(value);
+        this.props.onOptionSelected(value, queryResult);
       }
     });
   };

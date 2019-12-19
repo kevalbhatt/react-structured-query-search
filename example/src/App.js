@@ -120,7 +120,7 @@ export default class App extends Component {
 			<div className="container">
 				<ReactStructuredQuerySearch
 					isAllowOperator={true}
-                                        defaultSelected={[]}
+                    defaultSelected={[]}
 					options={this.options}
 					placeholder="Add filters..."
 					// renderTokenItem={this.getTokenItem}

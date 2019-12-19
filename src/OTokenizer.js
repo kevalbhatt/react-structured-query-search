@@ -113,7 +113,7 @@ export default class OTokenizer extends Tokenizer {
 				if (s.conditional.includes('(')) {
 					obj.open =  ++obj.open
 				} else if (s.conditional.includes(')')) {
-					obj.close = s.conditional.trim().length > 1 ? s.conditional.trim().length : ++obj.close ;
+					obj.close = s.conditional.trim().length > 1 ? (s.conditional.trim().length + obj.close) : ++obj.close ;
 				}
 			});
 		return {status: (obj.open === obj.close), openCount: obj.open, closeCount: obj.close};
@@ -266,7 +266,7 @@ export default class OTokenizer extends Tokenizer {
 		}
 	}
 
-	_getHeader() {
+        _getHeader = () => {
 		if (this.state.conditional == "" && this._checkConditionalOptions()) {
 			return this.props.conditionalHeader || "Conditional";
 		} else if (this.state.category == "") {
@@ -365,12 +365,12 @@ export default class OTokenizer extends Tokenizer {
 			this.props.onTokenRemove(this.state.selected);
 		});
 
-		return;
-	};
+                return;
+        };
 
-	_addTokenForValue = value => {
-		if (this.props.disabled) {
-			return;
+        _addTokenForValue = (value, queryResult) => {
+                if (this.props.disabled) {
+                        return;
                 }
                 let { isAllowOperator } = this.props;
                 const closeBracket = (value && value.toString() !== "[object Object]" && value.includes(')')) ? true : false;
@@ -399,6 +399,9 @@ export default class OTokenizer extends Tokenizer {
 			this.setState({ operator: value });
 			this.typeaheadRef.setEntryText("");
 			return;
+		}
+		if (queryResult) {
+			this._setQueryResult(queryResult);
 		}
 		this._addToken({value, isAllowOperator});
 	};
@@ -447,10 +450,79 @@ export default class OTokenizer extends Tokenizer {
 			}
 		}
 		this.setState(stateObj, () => {
-			this.props.onTokenAdd(this.state.selected);
+			const queryKeys = Object.keys(this.queryResultObj);
+			const selected = JSON.parse(JSON.stringify(this.state.selected));
+			selected.map((s) => {
+				const index = queryKeys.findIndex((q) => q === s.category);
+				delete s.conditional;
+				if (index !== -1) {
+					s.jsonFormat = this.queryResultObj[queryKeys[index]];
+				}
+			});
+			this.props.onTokenAdd(selected);
 			this._focusInput();
 		});
 		return;
+	}
+
+	splitBySpace = (str) => {
+			return str.split(' ').filter((a) => a !== '');
+	}
+
+	_setQueryResult = (results) => {
+		this.queryResultObj[this.state.category] = {criterion: []};
+		const obj = this.queryResultObj[this.state.category], opt = { open: 0, close: 0};
+		results.forEach((a, i) => {
+			const condition = this.splitBySpace(a.conditional)[0];
+			if (["AND","OR"].includes(condition) && i < 1) {
+					obj.condition = condition;
+					this.setCriterion(a, obj, opt);
+			}
+			if (/[,]/.test(a.conditional)) {
+					this.setCriterion(a, obj, opt, false);
+			} else if (/[(]/.test(a.conditional) && i > 0) {
+				this.setCriterion(a, obj, opt, true);
+				opt.open = ++opt.open;
+			} else if (/[)]/.test(a.conditional)) {
+				opt.close = ++opt.close;
+			}
+		});
+	}
+
+	setCriterion = (field, obj, opt, action) => {
+		let open = opt.open, close = opt.close;
+		if (obj.criterion.length === 0) {
+			obj.criterion = [this.getCriterionObj(field)];
+			return;
+		}
+		const criterionNestedCall = (criterions) => {
+			const lastIndex = criterions.length - 1;
+			const lastObj = criterions[lastIndex];
+			if(open > close && lastObj.criterion) {
+				open = --open;
+				return criterionNestedCall(criterions[criterions.length - 1].criterion);
+			}
+			if (open === close || open > close) {
+				if (action) {
+					const condition = this.splitBySpace(field.conditional)[0];
+					criterions.push(this.getCriterionObj(field, condition));
+				} else {
+					criterions.push(this.getCriterionObj(field));
+				}
+
+			}
+		};
+		criterionNestedCall(obj.criterion);
+	}
+
+	getCriterionObj = (o, condition) => {
+			const _o = {
+					attributeName: o.category,
+					operator: o.operator,
+					attributeValue: o.value
+			};
+
+			return !condition ? _o : {condition: condition, criterion: [_o]};
 	}
 
 	_onClearAll = () => {
@@ -506,15 +578,14 @@ export default class OTokenizer extends Tokenizer {
                         operator: '',
                         ediTableTokenId: null
                 }, () => {
-                        this.props.onTokenAdd(this.state.selected);
                         this._focusInput();
                 });
         }
 
-	_getTypeahed({mykey, show}) {
-		var classes = {};
-		classes[this.props.customClasses.typeahead] = !!this.props.customClasses.typeahead;
-                var classList = classNames(classes),
+        _getTypeahed({mykey, show}){
+                var classes = {};
+                classes[this.props.customClasses.typeahead] = !!this.props.customClasses.typeahead;
+                const classList = classNames(classes),
                 editId = (this.props.ediTableTokenId !== null  && this.props.ediTableTokenId !== undefined) ? this.props.ediTableTokenId : this.state.ediTableTokenId,
                 placeholder =  this.state.category === '' ? this.props.placeholder : this._getHeader().toLowerCase(),
                 typeHeadComp = 	<Typeahead
