@@ -122,6 +122,7 @@ export default class App extends Component {
 					isAllowOperator={true}
                                         defaultSelected={[]}
 					options={this.options}
+					placeholder="Add filters..."
 					// renderTokenItem={this.getTokenItem}
 					updateOptions={({ updatedValues, addedValue }) => {
 						if (addedValue && addedValue.category === "Symbol" && addedValue.value === "TFSC") {

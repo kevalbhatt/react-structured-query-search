@@ -99,7 +99,7 @@ export default class OTokenizer extends Tokenizer {
 	_showCloseBracketOptions (val) {
 		let showCloseBracket =  this.state.selected.length > 0 ? true :  !this._checkSpeacialChar(val);
 		if (this.state.selected.length > 0 && (val.includes(',') || val.includes(' )'))) {
-			showCloseBracket = this._bracketHasClosed() && !this.state.ediTableTokenId ? false : true;
+			showCloseBracket = this._bracketHasClosed().status && !this.state.ediTableTokenId ? false : true;
 		}
 		return showCloseBracket;
 	}
@@ -113,10 +113,10 @@ export default class OTokenizer extends Tokenizer {
 				if (s.conditional.includes('(')) {
 					obj.open =  ++obj.open
 				} else if (s.conditional.includes(')')) {
-					obj.close =  ++obj.close
+					obj.close = s.conditional.trim().length > 1 ? s.conditional.trim().length : ++obj.close ;
 				}
 			});
-		return obj.open === obj.close;
+		return {status: (obj.open === obj.close), openCount: obj.open, closeCount: obj.close};
 	}
 
 	_getOptionsForTypeahead() {
@@ -128,6 +128,15 @@ export default class OTokenizer extends Tokenizer {
 					if (condition && this._showCloseBracketOptions(condition)) {
 						conditional.push(condition);
 					}
+			}
+			const bracket = this._bracketHasClosed();
+			if (!bracket.status && (bracket.openCount - bracket.closeCount) > 1) {
+					let bracketClosed = '', counter = (bracket.openCount - bracket.closeCount);
+					while(counter > 0) {
+						bracketClosed += ')';
+						counter--;
+					}
+					conditional.push(bracketClosed);
 			}
 			return conditional;
 		} else if (this.state.category == "" && !closeBracket ) {
@@ -370,7 +379,7 @@ export default class OTokenizer extends Tokenizer {
                         this.state.conditional = val;
                         this.setState({ conditional: val});
 			this.typeaheadRef.setEntryText("");
-			if (this.props.customQuery && val === " )") {
+			if (this.props.customQuery && val.includes(")")) {
 				this._addToken({value: val, isAllowOperator: false, closeToken: true});
 			}
 			return;
@@ -507,7 +516,7 @@ export default class OTokenizer extends Tokenizer {
 		classes[this.props.customClasses.typeahead] = !!this.props.customClasses.typeahead;
                 var classList = classNames(classes),
                 editId = (this.props.ediTableTokenId !== null  && this.props.ediTableTokenId !== undefined) ? this.props.ediTableTokenId : this.state.ediTableTokenId,
-                placeholder = this.state.category.toLowerCase() || this.props.placeholder,
+                placeholder =  this.state.category === '' ? this.props.placeholder : this._getHeader().toLowerCase(),
                 typeHeadComp = 	<Typeahead
 						ref={ref => this.typeaheadRef = ref}
 						disabled={this.props.disabled}
