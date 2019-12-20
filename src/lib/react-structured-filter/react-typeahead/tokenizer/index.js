@@ -107,7 +107,8 @@ export default class TypeaheadTokenizer extends Component {
     if (this.state.category == "") {
       var categories = [];
       for (var i = 0; i < this.state.options.length; i++) {
-        categories.push(this.state.options[i].category);
+        const _category = this._getCategoryName(this.state.options[i].category);
+        categories.push(_category);
       }
       return categories;
     } else if (this.state.operator == "") {
@@ -131,6 +132,14 @@ export default class TypeaheadTokenizer extends Component {
     return this.state.options;
   }
 
+  _getCategoryName(category, displayTextFlag) {
+    let _category = category;
+    if (category.toString() === "[object Object]") {
+      _category = displayTextFlag ? (category.displayName || category.name) : category.name;
+    }
+    return _category;
+  }
+
   _getHeader() {
     if (this.state.category == "") {
       return "Category";
@@ -139,13 +148,11 @@ export default class TypeaheadTokenizer extends Component {
     } else {
       return "Value";
     }
-
-    return this.state.options;
   }
 
   _getCategoryType() {
     for (var i = 0; i < this.state.options.length; i++) {
-      if (this.state.options[i].category == this.state.category) {
+      if (this._getCategoryName(this.state.options[i].category) == this.state.category) {
         return this.state.options[i].type;
       }
     }
@@ -153,7 +160,7 @@ export default class TypeaheadTokenizer extends Component {
 
   _getCategoryOptions() {
     for (var i = 0; i < this.state.options.length; i++) {
-      if (this.state.options[i].category == this.state.category) {
+      if (this._getCategoryName(this.state.options[i].category) == this.state.category) {
         return this.state.options[i].options;
       }
     }
@@ -206,7 +213,7 @@ export default class TypeaheadTokenizer extends Component {
 
   _editTokenForValue = value => {
     const index = this.state.selected.indexOf(value),
-      type = this.state.options.find((o) => o.category === value.category).type;
+      type = this.state.options.find((o) => this._getCategoryName(o.category) === value.category).type;
       let queryVal = null;
     if (type === 'query') {
       queryVal = value.value.trim().substr(0, value.value.trim().length - 1);

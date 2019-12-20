@@ -51,19 +51,22 @@ export default class OTypeahead extends Typeahead {
 
 	_onOptionSelected(option) {
 		if (option !== this.props.fuzzySearchEmptyMessage) {
-			var nEntry = this.entryRef;
+			var nEntry = this.entryRef, val = option;
 			nEntry.focus();
-			if (typeof option == "object") {
-				nEntry.value = option[this.props.fuzzySearchKeyAttribute];
+			if (typeof val == "object") {
+				nEntry.value = val[this.props.fuzzySearchKeyAttribute];
 			} else {
-				nEntry.value = option;
+				if (val.includes('(')) {
+					val = val.split('(')[0].trim();
+				}
+				nEntry.value = val;
 			}
 			this.setState({
 				visible: this.getOptionsForValue(option, this.state.options),
-				selection: option,
-				entryValue: option
+				selection: val,
+				entryValue: val
 			});
-			this.props.onOptionSelected(option);
+			this.props.onOptionSelected(val);
 		}
 	}
 

@@ -23,9 +23,10 @@ export default class OTokenizer extends Tokenizer {
 			}
 		});
 		this.props.options.forEach(val => {
-			if (selectedValueSet[val.category]) {
+			const _category = this._getCategoryName(val.category);
+			if (selectedValueSet[_category]) {
 				// escape category if options is not avilable.
-				this._getOptions({ options: val.options, category: val.category, selected: selectedValueSet[val.category], fromDefaultValue: true });
+				this._getOptions({ options: val.options, category: _category, selected: selectedValueSet[_category], fromDefaultValue: true });
 			}
 		});
 		return defaultValue;
@@ -64,7 +65,7 @@ export default class OTokenizer extends Tokenizer {
                 var that = this,
                 type = this._getCategoryType();
                 if (this.state.category !== "" && type === 'query') {
-                        var opt = this.state.options.find(function(f) { return f.category === that.state.category;});
+                        var opt = this.state.options.find(function(f) { return that._getCategoryName(f.category) === that.state.category;});
                         this.queryOptions = opt.queryOptions;
                         return type;
                 } else if (this.state.category != "" && (this.props.isAllowOperator && this._getCategoryOperator() !== null ? this.state.operator != "" : true)) {
@@ -76,7 +77,7 @@ export default class OTokenizer extends Tokenizer {
 
 	_getCategoryOperator() {
 		for (var i = 0; i < this.state.options.length; i++) {
-			if (this.state.options[i].category == this.state.category) {
+			if (this._getCategoryName(this.state.options[i].category) == this.state.category) {
 				return this.state.options[i].operator;
 			}
 		}
@@ -143,7 +144,7 @@ export default class OTokenizer extends Tokenizer {
 			var categories = [];
 			for (var i = 0; i < this.state.options.length; i++) {
 				let options = this.state.options[i],
-					category = options.category,
+					category = this._getCategoryName(options.category, true),
                                         editItem = this.state.ediTableTokenId !== null ?  this.state.selected[this.state.ediTableTokenId] : {},
 					isAllowCustomValue = options.isAllowCustomValue == undefined ? false : options.isAllowCustomValue,
                                         isAllowDuplicateCategories = (options.isAllowDuplicateCategories == undefined || editItem.category === category) ? true : options.isAllowDuplicateCategories;
@@ -282,7 +283,7 @@ export default class OTokenizer extends Tokenizer {
 	_getAllowDuplicateCategories({ category, options = this.state.options }) {
 		if (category) {
 			for (var i = 0; i < options.length; i++) {
-				if (options[i].category == category) {
+				if (this._getCategoryName(options[i].category) == category) {
 					return options[i].isAllowDuplicateCategories || true;
 				}
 			}
@@ -294,7 +295,7 @@ export default class OTokenizer extends Tokenizer {
 	_getAllowDuplicateOptions({ category, options = this.state.options }) {
 		if (category) {
 			for (var i = 0; i < options.length; i++) {
-				if (options[i].category == category) {
+				if (this._getCategoryName(options[i].category) == category) {
 					return options[i].isAllowDuplicateOptions || false;
 				}
 			}
@@ -306,7 +307,7 @@ export default class OTokenizer extends Tokenizer {
 	_getAllowCustomValue({ category, options = this.state.options }) {
 		if (category) {
 			for (var i = 0; i < options.length; i++) {
-				if (options[i].category == category) {
+				if (this._getCategoryName(options[i].category) == category) {
 					return options[i].isAllowCustomValue || false;
 				}
 			}
@@ -317,7 +318,7 @@ export default class OTokenizer extends Tokenizer {
 
 	_getFuzzySearchKeyAttribute({ category, options = this.state.options }) {
 		for (var i = 0; i < options.length; i++) {
-			if (options[i].category == category) {
+			if (this._getCategoryName(options[i].category) == category) {
 				return options[i].fuzzySearchKeyAttribute || "name";
 			}
 		}
@@ -374,7 +375,7 @@ export default class OTokenizer extends Tokenizer {
                 }
                 let { isAllowOperator } = this.props;
                 const closeBracket = (value && value.toString() !== "[object Object]" && value.includes(')')) ? true : false;
-                if (this.state.conditional == "" && this._checkConditionalOptions(value)) {
+                if (this.state.conditional == "" && this._checkConditionalOptions()) {
                         var val = this._checkSpeacialChar(value) ? value : value + " ( " ;
                         this.state.conditional = val;
                         this.setState({ conditional: val});
@@ -580,7 +581,7 @@ export default class OTokenizer extends Tokenizer {
                 }, () => {
                         this._focusInput();
                 });
-        }
+		}
 
         _getTypeahed({mykey, show}){
                 var classes = {};
@@ -614,15 +615,15 @@ export default class OTokenizer extends Tokenizer {
 						onKeyDown={this._onKeyDown}
 						fromTokenizer={true}
 						emptyParentCategoryState={this._emptyParentCategoryState}
-                                                customQuery={this.props.customQuery}
-                                                bracketHasClosed={this._bracketHasClosed}
-                                                updateParentInputText={this.props.updateParentInputText}
-                                                ediTableTokenId={editId}
-                                                queryOptions={this.queryOptions}
-                                                updatedToken={this._updatedToken}
-                                                updateParentToken={this.props.updateParentToken}
-                                                queryValueToEdit={this.state.queryValueToEdit}
-                                        />;
+						customQuery={this.props.customQuery}
+						bracketHasClosed={this._bracketHasClosed}
+						updateParentInputText={this.props.updateParentInputText}
+						ediTableTokenId={editId}
+						queryOptions={this.queryOptions}
+						updatedToken={this._updatedToken}
+						updateParentToken={this.props.updateParentToken}
+						queryValueToEdit={this.state.queryValueToEdit}
+				/>;
                 return 	show ? this.getTypeHeadHtmlContainer(typeHeadComp, mykey) : typeHeadComp;
         }
 }

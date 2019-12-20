@@ -47,30 +47,42 @@ export default class App extends Component {
                                 options: null,
                                 operator: null,
                                 queryOptions: [
-                                        {
-                                                category: "Demo",
-                                                type: "textoptions",
-                                                operator: ["==", "!="],
-                                                options: ["demo_1", "demo_2"]
-                                        },
-                                        {
-                                                category: "Sample",
-                                                type: "textoptions",
-                                                operator: ["==", "!="],
-                                                options: ["Sample_1", "Sample_2"]
-                                        },
-                                        {
-                                                category: "Test",
-                                                type: "textoptions",
-                                                operator: ["==", "!="],
-                                                options: ["Test_1", "Test_2"]
-                                        },
-                                        {
-                                                category: "Jason",
-                                                type: "text",
-                                                operator: ["==", "!="],
-                                                options: null
-                                        }
+										{
+											category: {
+												name: "QualifiedName",
+												displayName: "QualifiedName (string)"
+											},
+											type: "text",
+											operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
+											options: null
+										},
+										{
+											category: {
+												name: "Description",
+												displayName: "Description (string)"
+											},
+											type: "text",
+											operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
+											options: null
+										},
+										{
+											category: {
+												name: "Name",
+												displayName: "Name (string)"
+											},
+											type: "text",
+											operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
+											options: null
+										},
+										{
+											category: {
+												name: "Owner",
+												displayName: "Owner (string)"
+											},
+											type: "text",
+											operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
+											options: null
+										}
                                 ]
 			}
 		];
