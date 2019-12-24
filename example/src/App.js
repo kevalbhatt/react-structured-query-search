@@ -43,15 +43,18 @@ export default class App extends Component {
                                 category: "Query",
                                 isAllowDuplicateCategories: false,
                                 type: "query",
-                                isAllowCustomValue: true,
+								isAllowCustomValue: true,
                                 options: null,
-                                operator: null,
+								operator: null,
+								fuzzySearchKeyAttribute: "displayName",
                                 queryOptions: [
 										{
 											category: {
 												name: "QualifiedName",
-												displayName: "QualifiedName (string)"
+												displayName: "QualifiedName (string)",
+												group: 'In house'
 											},
+											fuzzySearchKeyAttribute: "displayName",
 											type: "text",
 											operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
 											options: null
@@ -59,8 +62,10 @@ export default class App extends Component {
 										{
 											category: {
 												name: "Description",
-												displayName: "Description (string)"
+												displayName: "Description (string)",
+												group: 'In house',
 											},
+											fuzzySearchKeyAttribute: "displayName",
 											type: "text",
 											operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
 											options: null
@@ -68,8 +73,10 @@ export default class App extends Component {
 										{
 											category: {
 												name: "Name",
-												displayName: "Name (string)"
+												displayName: "Name (string)",
+												group: 'out source'
 											},
+											fuzzySearchKeyAttribute: "displayName",
 											type: "text",
 											operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
 											options: null
@@ -77,11 +84,27 @@ export default class App extends Component {
 										{
 											category: {
 												name: "Owner",
-												displayName: "Owner (string)"
+												displayName: "Owner (string)",
+												group: 'out source'
 											},
-											type: "text",
+											fuzzySearchKeyAttribute: "displayName",
+											type: "textoptions",
 											operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
-											options: null
+											options: [{
+												name: 'user1',
+												displayName: "User 1",
+												group: 'In house'
+											},
+											{
+												name: 'user2',
+												displayName: "User 2",
+												group: 'out source'
+											},
+											{
+												name: 'user3',
+												displayName: "User 3",
+												group: 'In house'
+											}]
 										}
                                 ]
 			}

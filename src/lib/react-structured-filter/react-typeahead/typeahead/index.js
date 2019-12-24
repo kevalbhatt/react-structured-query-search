@@ -243,7 +243,7 @@ export default class Typeahead extends Component {
         this._onOptionSelected(this.state.entryValue);
       } else if (this.props.customQuery) {
         var bracket = this.props.bracketHasClosed();
-        if (bracket.openCount === bracket.closeCount) {
+        if (bracket.openCount === bracket.closeCount && bracket.openCount > 0) {
           this.props.updateParentInputText();
         }
       }

@@ -157,11 +157,11 @@ export default class OTokenizer extends Tokenizer {
 						return obj.category == category;
 					});
 					if (!foundCategory && category.trim() !== "") {
-						categories.push(category);
+						categories.push(options.category);
 					}
 				} else {
 					if (category.trim() !== "") {
-						categories.push(category);
+						categories.push(options.category);
 					}
 				}
 			}
@@ -387,8 +387,9 @@ export default class OTokenizer extends Tokenizer {
 		}
 
 		if (this.state.category == "" && !closeBracket) {
-			this.state.category = value;
-			this.setState({ category: value });
+			var _val = typeof value === "object" ? value.name : value;
+			this.state.category = _val;
+			this.setState({ category: _val });
 			this.typeaheadRef.setEntryText("");
 			return;
 		}
@@ -412,7 +413,7 @@ export default class OTokenizer extends Tokenizer {
 		value = {
 			conditional: this.state.conditional,
 			category: this.state.category,
-			value: value
+			value: (this.props.customQuery && typeof value === "object" ? value.name : value)
 		};
 
 		if (closeToken) {
@@ -531,7 +532,7 @@ export default class OTokenizer extends Tokenizer {
 			return;
 		}
 		this.skipCategorySet.clear();
-		this.setState({ selected: [], category: "", operator: "" }, () => {
+		this.setState({ selected: [], category: "", operator: "", ediTableTokenId: null, queryValueToEdit: null}, () => {
 			if (this.props.onClearAll) {
 				this.props.onClearAll(this.state.selected);
 			}

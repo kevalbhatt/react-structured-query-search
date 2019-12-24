@@ -80,9 +80,15 @@
 					cursor: not-allowed;
 				}
 			}
+			a.group-items {
+				padding: 5px 0px 5px 10px;
+			}
 		}
 		.hover a {
 			@extend %extend_2;
+		}
+		li.group-title {
+			padding: 5px;
 		}
 	}
 }

@@ -29,25 +29,6 @@ export default class Token extends Component {
     );
   }
 
-  _makeEditButton() {
-    if (!this.props.onRemoveToken) {
-      return "";
-    }
-    return (
-      <a
-        className="typeahead-token-edit"
-        href="javascript:void(0)"
-        onClick={function(event) {
-          event.stopPropagation();
-          event.preventDefault();
-          this.props.onEditToken(this.props.children);
-        }.bind(this)}
-      >
-        &#x1F589;
-      </a>
-    );
-  }
-
   getTokenValue() {
     let value = this.props.children["value"];
     if (value && typeof value == "object") {

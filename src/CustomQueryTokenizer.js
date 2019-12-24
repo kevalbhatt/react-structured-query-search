@@ -5,11 +5,51 @@ import Tokenizer from "./OTokenizer";
 export default class CustomQueryTokenizer extends Component {
     constructor(props) {
         super(props);
+        this.options = this.props.queryOptions || [];
+        this.conditionalList = [",", "AND","OR"," )"];
+        this.operators = this.getOperatorArray();
         this.state = {
             selected : this.getSelectedValueArray()
         };
-        this.options = this.props.queryOptions || [];
-        this.conditionalList = [",", "AND","OR"," )"];
+    }
+
+    getOperatorArray () {
+        if (!this.props.defaultSelected) {
+            return [];
+        }
+        let arr = [];
+        this.options.forEach((o) => {
+           arr = arr.concat(o.operator);
+        });
+        return Array.from(new Set([...arr]));
+    }
+
+    getOperatorValObject = (o) => {
+        if (!this.operators.includes(o[0])) {
+            const _opt = o.splice(2);
+            const _o = [o.join(' '), ..._opt];
+            return this.getOperatorValObject(_o);
+        }
+        return o;
+    }
+
+    containsOperator = (str) => {
+        if (str.includes(')') && str.split('')[0] === ")") {
+            return false;
+        }
+        const o = this.getTrimedSplitData(str, ' '), field = o.splice(0, 1)[0];
+        const obj = this.getOperatorValObject(o),
+            operator = obj[0],
+            status = operator === undefined ? false : true,
+            val = obj[1],
+            arr = obj.splice(2) || [];
+        return {
+            status,
+            field,
+            operator,
+            val,
+            arr
+        };
     }
 
     getSelectedValueArray () {
@@ -22,22 +62,23 @@ export default class CustomQueryTokenizer extends Component {
             arr.forEach((str, i) => {
                 if (["AND","OR"].includes(str)) {
                     obj.conditional = str + ' (';
+                    return;
                 }
                 if (/[,]/.test(str)) {
                     return recursionFunc(this.getTrimedSplitData(str, ','), ',');
                 }
-                if (/[!=<>]/.test(str)) {
+                const o = this.containsOperator(str);
+                if (o.status) {
                     if (sideEffect && i > 0) {
                         obj.conditional = sideEffect;
                     }
-                    const o = this.getTrimedSplitData(str, ' ');
-                    obj.category = o[0];
-                    obj.operator = o[1];
-                    obj.value = o[2];
-                    if (Object.keys(obj).length === 4 && o.length > 3) {
+                    obj.category = o.field;
+                    obj.operator = o.operator;
+                    obj.value = o.val;
+                    if (Object.keys(obj).length === 4 && o.arr && o.arr.length > 0) {
                         itemsList.push(obj);
                         obj = {};
-                        return recursionFunc(o.slice(3));
+                        return recursionFunc(o.arr);
                     }
                 }
                 if (/[)]/.test(str) && !/[a-zA-Z0-9]/.test(str)) {
