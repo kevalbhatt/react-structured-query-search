@@ -32,7 +32,7 @@ export default class TypeaheadOption extends Component {
       "typeahead-option": true
     };
     classes[this.props.customClasses.listAnchor] = !!this.props.customClasses.listAnchor;
-    classes['group-items'] = this.props.grouping ? true : false;
+    classes["group-items"] = this.props.grouping ? true : false;
     return classNames(classes);
   }
 

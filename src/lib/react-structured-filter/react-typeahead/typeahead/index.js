@@ -71,11 +71,11 @@ export default class Typeahead extends Component {
 
       // A valid typeahead value
       selection: null,
-      focused:  this.props.isElemenFocused || false
+      focused: this.props.isElemenFocused || false
     };
   }
 
-  componentDidMount () {
+  componentDidMount() {
     if (this.props.isElemenFocused && this.entryRef && this.entryRef.focus) {
       this.entryRef.focus();
     }
@@ -189,15 +189,18 @@ export default class Typeahead extends Component {
     if (this.state.datatype === "query") {
       value = val;
     }
-    this.setState({
-      visible: this.getOptionsForValue(value, this.state.options),
-      selection: null,
-      entryValue: value
-    }, () => {
-      if (this.state.datatype === "query" && val !== undefined) {
-        this.props.onOptionSelected(value, queryResult);
+    this.setState(
+      {
+        visible: this.getOptionsForValue(value, this.state.options),
+        selection: null,
+        entryValue: value
+      },
+      () => {
+        if (this.state.datatype === "query" && val !== undefined) {
+          this.props.onOptionSelected(value, queryResult);
+        }
       }
-    });
+    );
   };
 
   _onEnter = event => {
@@ -238,7 +241,10 @@ export default class Typeahead extends Component {
       // If no options were provided so we can match on anything
       if (this.props.options.length === 0) {
         this._onOptionSelected(this.state.entryValue);
-      } else if (this.props.options.indexOf(this.state.entryValue) > -1 || (this.state.entryValue && this.state.entryValue.trim() != "" && this.props.isAllowCustomValue)) {
+      } else if (
+        this.props.options.indexOf(this.state.entryValue) > -1 ||
+        (this.state.entryValue && this.state.entryValue.trim() != "" && this.props.isAllowCustomValue)
+      ) {
         // If what has been typed in is an exact match of one of the options
         this._onOptionSelected(this.state.entryValue);
       } else if (this.props.customQuery) {

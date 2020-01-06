@@ -77,15 +77,13 @@ export default class TypeaheadTokenizer extends Component {
       let mykey =
         selected.category +
         (this.props.isAllowOperator ? selected.operator : "") +
-        (selected.value ?
-          (typeof selected.value == "string"
-            ? selected.value
-            : selected.value[fuzzySearchKeyAttribute])
-           : "") + index;
+        (selected.value ? (typeof selected.value == "string" ? selected.value : selected.value[fuzzySearchKeyAttribute]) : "") +
+        index;
 
-      return (
-        this.state.ediTableTokenId === index ? this._getTypeahed ({mykey, show: true}):
-       <Token
+      return this.state.ediTableTokenId === index ? (
+        this._getTypeahed({ mykey, show: true })
+      ) : (
+        <Token
           key={mykey}
           className={classList}
           renderTokenItem={this.props.renderTokenItem}
@@ -135,7 +133,7 @@ export default class TypeaheadTokenizer extends Component {
   _getCategoryName(category, displayTextFlag) {
     let _category = category;
     if (category.toString() === "[object Object]") {
-      _category = displayTextFlag ? (category.displayName || category.name) : category.name;
+      _category = displayTextFlag ? category.displayName || category.name : category.name;
     }
     return _category;
   }
@@ -213,21 +211,27 @@ export default class TypeaheadTokenizer extends Component {
 
   _editTokenForValue = value => {
     const index = this.state.selected.indexOf(value),
-      type = this.state.options.find((o) => this._getCategoryName(o.category) === value.category).type;
-      let queryVal = null;
-    if (type === 'query') {
+      type = this.state.options.find(o => this._getCategoryName(o.category) === value.category).type;
+    let queryVal = null;
+    if (type === "query") {
       queryVal = value.value.trim().substr(0, value.value.trim().length - 1);
     }
-    this.setState({
-      conditional: value.conditional || '',
-      category: value.category || '',
-      operator: value.operator,
-      value: null,
-      ediTableTokenId: index,
-      focused: true,
-      queryValueToEdit: queryVal
-    }, () => setTimeout(() => {this._focusInput()}, 0));
-  }
+    this.setState(
+      {
+        conditional: value.conditional || "",
+        category: value.category || "",
+        operator: value.operator,
+        value: null,
+        ediTableTokenId: index,
+        focused: true,
+        queryValueToEdit: queryVal
+      },
+      () =>
+        setTimeout(() => {
+          this._focusInput();
+        }, 0)
+    );
+  };
 
   _addTokenForValue = value => {
     if (this.state.category == "") {
@@ -288,12 +292,12 @@ export default class TypeaheadTokenizer extends Component {
 
   render() {
     var classes = {
-      'filter-tokenizer': true
+      "filter-tokenizer": true
     };
     classes[this.props.customClasses.query] = this.props.customClasses.query;
     var classList = classNames(classes, {
-      "padding-for-clear-all" : this.props.isAllowClearAll,
-      "disabled": this.props.disabled
+      "padding-for-clear-all": this.props.isAllowClearAll,
+      disabled: this.props.disabled
     });
     return (
       <div
@@ -303,14 +307,15 @@ export default class TypeaheadTokenizer extends Component {
         }}
       >
         <div className="token-collection" onClick={this.onClickOfDivFocusInput}>
-          { this._renderTokens()}
-          { this.state.ediTableTokenId === null && <div className="filter-input-group">
+          {this._renderTokens()}
+          {this.state.ediTableTokenId === null && (
+            <div className="filter-input-group">
               <div className="filter-conditional">{this.state.conditional}</div>
               <div className="filter-category">{this.state.category}</div>
               <div className="filter-operator">{this.state.operator}</div>
-              {this._getTypeahed({show: false})}
+              {this._getTypeahed({ show: false })}
             </div>
-          }
+          )}
         </div>
         {this.props.isAllowClearAll ? this._getClearAllButton() : null}
       </div>

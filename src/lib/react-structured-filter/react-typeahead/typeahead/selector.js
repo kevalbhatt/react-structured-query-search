@@ -106,20 +106,24 @@ export default class TypeaheadSelector extends Component {
   }
 
   groupingOptions = () => {
-    const opt={};
-    this.props.options.forEach((option) => {
+    const opt = {};
+    this.props.options.forEach(option => {
       if (!opt[option.group]) {
         opt[option.group] = [];
       }
       opt[option.group].push(option);
     });
     return Object.keys(opt).map((k, i) => {
-      return <Fragment key={`${k}-${i}`}>
-        <li key={`${k}-${i}`} className="group-title"><strong>{k}</strong></li>
-        {this.getOptionsItems(opt[k], true)}
-      </Fragment>;
+      return (
+        <Fragment key={`${k}-${i}`}>
+          <li key={`${k}-${i}`} className="group-title">
+            <strong>{k}</strong>
+          </li>
+          {this.getOptionsItems(opt[k], true)}
+        </Fragment>
+      );
     });
-  }
+  };
 
   getOptionsList = () => {
     let options = this.props.options;
@@ -128,7 +132,7 @@ export default class TypeaheadSelector extends Component {
     } else {
       return this.getOptionsItems(options);
     }
-  }
+  };
 
   getOptionsItems = (options, grouping = false) => {
     return options.map(function(result, i) {
@@ -149,7 +153,7 @@ export default class TypeaheadSelector extends Component {
         </TypeaheadOption>
       );
     }, this);
-  }
+  };
 
   render() {
     var classes = {

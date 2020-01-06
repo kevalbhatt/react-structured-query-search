@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, { Component, Fragment } from "react";
 
 import Tokenizer from "./OTokenizer";
 
@@ -6,38 +6,39 @@ export default class CustomQueryTokenizer extends Component {
     constructor(props) {
         super(props);
         this.options = this.props.queryOptions || [];
-        this.conditionalList = [",", "AND","OR"," )"];
+        this.conditionalList = [",", "AND", "OR", " )"];
         this.operators = this.getOperatorArray();
         this.state = {
-            selected : this.getSelectedValueArray()
+            selected: this.getSelectedValueArray()
         };
     }
 
-    getOperatorArray () {
+    getOperatorArray() {
         if (!this.props.defaultSelected) {
             return [];
         }
         let arr = [];
-        this.options.forEach((o) => {
-           arr = arr.concat(o.operator);
+        this.options.forEach(o => {
+            arr = arr.concat(o.operator);
         });
         return Array.from(new Set([...arr]));
     }
 
-    getOperatorValObject = (o) => {
+    getOperatorValObject = o => {
         if (!this.operators.includes(o[0])) {
             const _opt = o.splice(2);
-            const _o = [o.join(' '), ..._opt];
+            const _o = [o.join(" "), ..._opt];
             return this.getOperatorValObject(_o);
         }
         return o;
-    }
+    };
 
-    containsOperator = (str) => {
-        if (str.includes(')') && str.split('')[0] === ")") {
+    containsOperator = str => {
+        if (str.includes(")") && str.split("")[0] === ")") {
             return false;
         }
-        const o = this.getTrimedSplitData(str, ' '), field = o.splice(0, 1)[0];
+        const o = this.getTrimedSplitData(str, " "),
+            field = o.splice(0, 1)[0];
         const obj = this.getOperatorValObject(o),
             operator = obj[0],
             status = operator === undefined ? false : true,
@@ -50,22 +51,23 @@ export default class CustomQueryTokenizer extends Component {
             val,
             arr
         };
-    }
+    };
 
-    getSelectedValueArray () {
+    getSelectedValueArray() {
         if (!this.props.defaultSelected) {
             return [];
         }
-        const strArray = this.getTrimedSplitData(this.props.defaultSelected, ' ('), itemsList = [];
+        const strArray = this.getTrimedSplitData(this.props.defaultSelected, " ("),
+            itemsList = [];
         let obj = {};
         const recursionFunc = (arr, sideEffect) => {
             arr.forEach((str, i) => {
-                if (["AND","OR"].includes(str)) {
-                    obj.conditional = str + ' (';
+                if (["AND", "OR"].includes(str)) {
+                    obj.conditional = str + " (";
                     return;
                 }
                 if (/[,]/.test(str)) {
-                    return recursionFunc(this.getTrimedSplitData(str, ','), ',');
+                    return recursionFunc(this.getTrimedSplitData(str, ","), ",");
                 }
                 const o = this.containsOperator(str);
                 if (o.status) {
@@ -83,9 +85,9 @@ export default class CustomQueryTokenizer extends Component {
                 }
                 if (/[)]/.test(str) && !/[a-zA-Z0-9]/.test(str)) {
                     obj.conditional = str;
-                    obj.category = '';
-                    obj.operator = '';
-                    obj.value = '';
+                    obj.category = "";
+                    obj.operator = "";
+                    obj.value = "";
                 }
                 if (Object.keys(obj).length === 4) {
                     itemsList.push(obj);
@@ -97,30 +99,30 @@ export default class CustomQueryTokenizer extends Component {
         return itemsList;
     }
 
-    getTrimedSplitData (str, expression) {
-        return str.split(expression).filter((f) => f.trim() !== '')
+    getTrimedSplitData(str, expression) {
+        return str.split(expression).filter(f => f.trim() !== "");
     }
 
-    getOperatorOptions () {
+    getOperatorOptions() {
         return ["==", "!="];
     }
 
-    getSymbolOptions () {
+    getSymbolOptions() {
         return ["TFSC", "PIL", "VNET"];
     }
 
-    getTokenItem (obj) {
+    getTokenItem(obj) {
         const val = obj.children;
         return `${val.conditional} ${val.category} ${val.operator} ${val.value}`;
     }
 
-    trimText (val) {
+    trimText(val) {
         return val.trim() === "" ? val.trim() : val + " ";
     }
 
-    updateParentInputText () {
-        let str = '';
-        this.state.selected.forEach((s) => {
+    updateParentInputText() {
+        let str = "";
+        this.state.selected.forEach(s => {
             str += this.trimText(s.conditional);
             str += this.trimText(s.category);
             str += this.trimText(s.operator);
@@ -131,7 +133,7 @@ export default class CustomQueryTokenizer extends Component {
 
     updateParentToken = () => {
         this.props.updatedToken();
-    }
+    };
 
     render() {
         var classList = {
@@ -140,17 +142,17 @@ export default class CustomQueryTokenizer extends Component {
             listItem: "filter-tokenizer-list__item",
             query: "custom-query"
         };
-        return(
+        return (
             <Fragment>
                 <Tokenizer
-					isAllowOperator={true}
-					defaultSelected={this.state.selected}
-					options={this.options}
-					renderTokenItem={this.getTokenItem}
+                    isAllowOperator={true}
+                    defaultSelected={this.state.selected}
+                    options={this.options}
+                    renderTokenItem={this.getTokenItem}
                     conditionalHeader={"Conditional"}
-                    categoryHeader={'Selection'}
-					// onTokenAdd={val => console.log(val, 'onTokenAdd')}
-                                        customClasses={classList}
+                    categoryHeader={"Selection"}
+                    // onTokenAdd={val => console.log(val, 'onTokenAdd')}
+                    customClasses={classList}
                     emptyParentCategoryState={this.props.emptyParentCategoryState}
                     updateParentInputText={this.updateParentInputText.bind(this)}
                     customQuery={true}
@@ -163,4 +165,4 @@ export default class CustomQueryTokenizer extends Component {
             </Fragment>
         );
     }
-};
+}

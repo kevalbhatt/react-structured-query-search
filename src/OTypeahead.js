@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Typeahead } from "./lib/react-structured-filter/react-typeahead/react-typeahead";
-import CustomQueryTokenizer from './CustomQueryTokenizer';
+import CustomQueryTokenizer from "./CustomQueryTokenizer";
 
 // Override the Tokenizer
 export default class OTypeahead extends Typeahead {
@@ -51,13 +51,14 @@ export default class OTypeahead extends Typeahead {
 
 	_onOptionSelected(option) {
 		if (option !== this.props.fuzzySearchEmptyMessage) {
-			var nEntry = this.entryRef, val = option;
+			var nEntry = this.entryRef,
+				val = option;
 			nEntry.focus();
 			if (typeof val == "object") {
 				nEntry.value = val[this.props.fuzzySearchKeyAttribute];
 			} else {
-				if (val.includes('(')) {
-					val = val.split('(')[0].trim();
+				if (val.includes("(")) {
+					val = val.split("(")[0].trim();
 				}
 				nEntry.value = val;
 			}
@@ -70,34 +71,39 @@ export default class OTypeahead extends Typeahead {
 		}
 	}
 
-	_getTypeaheadInput({classList, inputClassList}) {
-                if (this.props.ediTableTokenId !== null) {
-                        inputClassList += ' editMode';
-                }
-                var closeBtn = <a
-                        ref={ ref => this.closeRef = ref}
-                        className="typeahead-token-close"
-                        href="javascript:void(0)"
-                        onClick={(event) => {
-                                if (this.props.updateParentToken) {
-                                        this.props.updateParentToken();
-                                } else {
-                                        this.props.updatedToken();
-                                }
-                        event.preventDefault();
-                        }}
-                        >
-                                &#x00d7;
-                </a>;
-                return (
-                  <div className={classList}>
-                        {this.state.loadingOptions
-			  ? this.props.renderLoading
-				  ? this.props.renderLoading ()
-				  : <div>Loading...</div>
-			  : <span ref={ref => (this.inputRef = ref)} onFocus={this._onFocus}>
-				  {this.state.datatype == 'query'
-					? 	<CustomQueryTokenizer
+	_getTypeaheadInput({ classList, inputClassList }) {
+		if (this.props.ediTableTokenId !== null) {
+			inputClassList += " editMode";
+		}
+		var closeBtn = (
+			<a
+				ref={ref => (this.closeRef = ref)}
+				className="typeahead-token-close"
+				href="javascript:void(0)"
+				onClick={event => {
+					if (this.props.updateParentToken) {
+						this.props.updateParentToken();
+					} else {
+						this.props.updatedToken();
+					}
+					event.preventDefault();
+				}}
+			>
+				&#x00d7;
+			</a>
+		);
+		return (
+			<div className={classList}>
+				{this.state.loadingOptions ? (
+					this.props.renderLoading ? (
+						this.props.renderLoading()
+					) : (
+						<div>Loading...</div>
+					)
+				) : (
+					<span ref={ref => (this.inputRef = ref)} onFocus={this._onFocus}>
+						{this.state.datatype == "query" ? (
+							<CustomQueryTokenizer
 								ref={ref => (this.entryRef = ref)}
 								type={this.state.datatype}
 								placeholder={this.props.placeholder}
@@ -105,26 +111,28 @@ export default class OTypeahead extends Typeahead {
 								parentCallBack={this.props.parentCallBack}
 								disabled={this.props.disabled}
 								updatedInputText={this._onTextEntryUpdated}
-                                                                defaultSelected={this.props.queryValueToEdit}
+								defaultSelected={this.props.queryValueToEdit}
 								{...this.props}
 							/>
-					: 	<Fragment>
-							<input
-								ref={ref => (this.entryRef = ref)}
-								type={this.state.datatype == 'number' ? 'number' : 'text'}
-								placeholder={this.props.placeholder}
-								className={inputClassList}
-								defaultValue={this.state.entryValue}
-								onChange={this._onTextEntryUpdated}
-								onKeyDown={this._onKeyDown}
-								disabled={this.props.disabled}
-							/>
-							{this.props.ediTableTokenId !== null && this.props.ediTableTokenId !== undefined && closeBtn}
-						</Fragment>
-					}
-				  {this._renderIncrementalSearchResults ()}
-				</span>}
-		  </div>
+						) : (
+							<Fragment>
+								<input
+									ref={ref => (this.entryRef = ref)}
+									type={this.state.datatype == "number" ? "number" : "text"}
+									placeholder={this.props.placeholder}
+									className={inputClassList}
+									defaultValue={this.state.entryValue}
+									onChange={this._onTextEntryUpdated}
+									onKeyDown={this._onKeyDown}
+									disabled={this.props.disabled}
+								/>
+								{this.props.ediTableTokenId !== null && this.props.ediTableTokenId !== undefined && closeBtn}
+							</Fragment>
+						)}
+						{this._renderIncrementalSearchResults()}
+					</span>
+				)}
+			</div>
 		);
 	}
 }
