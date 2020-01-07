@@ -9,104 +9,106 @@ export default class App extends Component {
 		this.state = {
 			SymbolData: []
 		};
-                // NOTE: The operator will seen to UI only if props isAllowOperator={true}
-                this.options = [
-                        {
-                                category: "Type",
-                                type: "textoptions",
-                                operator: ["==", "!="],
+		// NOTE: The operator will seen to UI only if props isAllowOperator={true}
+		this.options = [
+			{
+				category: "Type",
+				type: "textoptions",
+				operator: ["==", "!="],
 				isAllowDuplicateCategories: false,
-                                options: this.getSymbolOptions
-                        },
-                        {
-                                category: "Classification",
-                                type: "textoptions",
-                                operator: ["==", "!="],
-                                isAllowDuplicateCategories: false,
+				options: this.getSymbolOptions
+			},
+			{
+				category: "Classification",
+				type: "textoptions",
+				operator: ["==", "!="],
+				isAllowDuplicateCategories: false,
 				fuzzySearchKeyAttribute: "sectorName",
-                                options: this.getSectorOptions
-                        },
-                        {
-                                category: "Terms",
-                                type: "textoptions",
-                                operator: null,
-                                isAllowDuplicateCategories: true,
-                                options: this.getIndustryOptions
-                        },
-                        {
-                                category: "Label",
-                                type: "text",
-                                isAllowDuplicateCategories: false,
-                                operator: null
-                        },
-                        {
-                                category: "Query",
-                                isAllowDuplicateCategories: false,
-                                type: "query",
-								isAllowCustomValue: true,
-                                options: null,
-								operator: null,
-								fuzzySearchKeyAttribute: "displayName",
-                                queryOptions: [
-										{
-											category: {
-												name: "QualifiedName",
-												displayName: "QualifiedName (string)",
-												group: 'In house'
-											},
-											fuzzySearchKeyAttribute: "displayName",
-											type: "text",
-											operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
-											options: null
-										},
-										{
-											category: {
-												name: "Description",
-												displayName: "Description (string)",
-												group: 'In house',
-											},
-											fuzzySearchKeyAttribute: "displayName",
-											type: "text",
-											operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
-											options: null
-										},
-										{
-											category: {
-												name: "Name",
-												displayName: "Name (string)",
-												group: 'out source'
-											},
-											fuzzySearchKeyAttribute: "displayName",
-											type: "text",
-											operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
-											options: null
-										},
-										{
-											category: {
-												name: "Owner",
-												displayName: "Owner (string)",
-												group: 'out source'
-											},
-											fuzzySearchKeyAttribute: "displayName",
-											type: "textoptions",
-											operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
-											options: [{
-												name: 'user1',
-												displayName: "User 1",
-												group: 'In house'
-											},
-											{
-												name: 'user2',
-												displayName: "User 2",
-												group: 'out source'
-											},
-											{
-												name: 'user3',
-												displayName: "User 3",
-												group: 'In house'
-											}]
-										}
-                                ]
+				options: this.getSectorOptions
+			},
+			{
+				category: "Terms",
+				type: "textoptions",
+				operator: null,
+				isAllowDuplicateCategories: true,
+				options: this.getIndustryOptions
+			},
+			{
+				category: "Label",
+				type: "text",
+				isAllowDuplicateCategories: false,
+				operator: null
+			},
+			{
+				category: "Query",
+				isAllowDuplicateCategories: false,
+				type: "query",
+				isAllowCustomValue: true,
+				options: null,
+				operator: null,
+				fuzzySearchKeyAttribute: "displayName",
+				queryOptions: [
+					{
+						category: {
+							name: "QualifiedName",
+							displayName: "QualifiedName (string)",
+							group: "In house"
+						},
+						fuzzySearchKeyAttribute: "displayName",
+						type: "text",
+						operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
+						options: null
+					},
+					{
+						category: {
+							name: "Description",
+							displayName: "Description (string)",
+							group: "In house"
+						},
+						fuzzySearchKeyAttribute: "displayName",
+						type: "text",
+						operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
+						options: null
+					},
+					{
+						category: {
+							name: "Name",
+							displayName: "Name (string)",
+							group: "out source"
+						},
+						fuzzySearchKeyAttribute: "displayName",
+						type: "text",
+						operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
+						options: null
+					},
+					{
+						category: {
+							name: "Owner",
+							displayName: "Owner (string)",
+							group: "out source"
+						},
+						fuzzySearchKeyAttribute: "displayName",
+						type: "textoptions",
+						operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
+						options: [
+							{
+								name: "user1",
+								displayName: "User 1",
+								group: "In house"
+							},
+							{
+								name: "user2",
+								displayName: "User 2",
+								group: "out source"
+							},
+							{
+								name: "user3",
+								displayName: "User 3",
+								group: "In house"
+							}
+						]
+					}
+				]
 			}
 		];
 	}
@@ -142,7 +144,7 @@ export default class App extends Component {
 	 * @return {[array]}
 	 */
 	getIndustryOptions() {
-                return [{ name: "Business Services", id: 1 }, { name: "Other Specialty Stores", id: 2 }, { name: "demo test", id: 3 }];
+		return [{ name: "Business Services", id: 1 }, { name: "Other Specialty Stores", id: 2 }, { name: "demo test", id: 3 }];
 	}
 
 	getTokenItem(obj) {
@@ -155,7 +157,7 @@ export default class App extends Component {
 			<div className="container">
 				<ReactStructuredQuerySearch
 					isAllowOperator={true}
-                    defaultSelected={[]}
+					defaultSelected={[]}
 					options={this.options}
 					placeholder="Add filters..."
 					// renderTokenItem={this.getTokenItem}

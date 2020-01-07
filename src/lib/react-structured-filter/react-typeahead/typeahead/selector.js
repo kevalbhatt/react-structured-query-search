@@ -113,12 +113,13 @@ export default class TypeaheadSelector extends Component {
   groupingOptions = () => {
     const opt = {};
     this.props.options.sort((a, b) => {
-      if (a.group === b.group) {
+      let aL = a.group.toLocaleLowerCase(),
+        bL = b.group.toLocaleLowerCase();
+      if (aL === bL) {
         return 0;
       }
-      return a.group < b.group ? -1 : 1;
+      return aL < bL ? -1 : 1;
     });
-    console.log(this.props.options);
     return this.getOptionsItems(this.props.options, true);
   };
 
