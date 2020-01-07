@@ -400,7 +400,16 @@ export default class OTokenizer extends Tokenizer {
 			this.setState({ conditional: val });
 			this.typeaheadRef.setEntryText("");
 			if (this.props.customQuery && val.includes(")")) {
-				this._addToken({ value: val, isAllowOperator: false, closeToken: true });
+				this._addToken({
+					value: val,
+					isAllowOperator: false,
+					closeToken: true,
+					cb: () => {
+						if (this._bracketHasClosed().status && this.props.updateParentInputText) {
+							this.props.updateParentInputText();
+						}
+					}
+				});
 			}
 			return;
 		}
@@ -427,7 +436,7 @@ export default class OTokenizer extends Tokenizer {
 		this._addToken({ value, isAllowOperator });
 	};
 
-	_addToken = ({ value, isAllowOperator, closeToken }) => {
+	_addToken = ({ value, isAllowOperator, closeToken, cb }) => {
 		value = {
 			conditional: this.state.conditional,
 			category: this.state.category,
@@ -481,6 +490,9 @@ export default class OTokenizer extends Tokenizer {
 			});
 			this.props.onTokenAdd(selected);
 			this._focusInput();
+			if (cb) {
+				cb();
+			}
 		});
 		return;
 	};

@@ -92,6 +92,7 @@ export default class OTypeahead extends Typeahead {
 				&#x00d7;
 			</a>
 		);
+
 		return (
 			<div className={classList}>
 				{this.state.loadingOptions ? (
@@ -112,6 +113,7 @@ export default class OTypeahead extends Typeahead {
 								disabled={this.props.disabled}
 								updatedInputText={this._onTextEntryUpdated}
 								defaultSelected={this.props.queryValueToEdit}
+								parentSetEntryText={this.setEntryText}
 								{...this.props}
 							/>
 						) : (

@@ -124,12 +124,12 @@ export default class Typeahead extends Component {
     }
   }
 
-  setEntryText(value) {
+  setEntryText = value => {
     if (this.entryRef != null) {
       this.entryRef.value = value;
     }
     this._onTextEntryUpdated();
-  }
+  };
 
   _renderIncrementalSearchResults() {
     if (this.props.isElemenFocused == undefined) {
@@ -197,7 +197,7 @@ export default class Typeahead extends Component {
       },
       () => {
         if (this.state.datatype === "query" && val !== undefined) {
-          this.props.onOptionSelected(value, queryResult);
+          this.props.onOptionSelected(value, queryResult, this.entryRef);
         }
       }
     );

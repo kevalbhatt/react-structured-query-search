@@ -161,6 +161,7 @@ export default class CustomQueryTokenizer extends Component {
                     ediTableTokenId={this.props.ediTableTokenId}
                     updateParentToken={this.updateParentToken}
                     conditionalList={this.conditionalList}
+                    parentSetEntryText={this.props.parentSetEntryText}
                 />
             </Fragment>
         );

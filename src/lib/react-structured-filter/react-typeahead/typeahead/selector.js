@@ -98,7 +98,12 @@ export default class TypeaheadSelector extends Component {
     } else {
       if (typeof item == "object") {
         let attr = this.props.fuzzySearchKeyAttribute;
-        return grouping && item.displayName ? item.displayName : item[attr] ? item[attr] : item["string"];
+        if (grouping && item.displayName) {
+          return item.displayName;
+        } else {
+          return item[attr] || item["string"];
+        }
+        //return grouping && item.displayName ? item.displayName : item[attr] ? item[attr] : item["string"];
       } else if (typeof item == "string") {
         return item;
       }
@@ -107,22 +112,14 @@ export default class TypeaheadSelector extends Component {
 
   groupingOptions = () => {
     const opt = {};
-    this.props.options.forEach(option => {
-      if (!opt[option.group]) {
-        opt[option.group] = [];
+    this.props.options.sort((a, b) => {
+      if (a.group === b.group) {
+        return 0;
       }
-      opt[option.group].push(option);
+      return a.group < b.group ? -1 : 1;
     });
-    return Object.keys(opt).map((k, i) => {
-      return (
-        <Fragment key={`${k}-${i}`}>
-          <li key={`${k}-${i}`} className="group-title">
-            <strong>{k}</strong>
-          </li>
-          {this.getOptionsItems(opt[k], true)}
-        </Fragment>
-      );
-    });
+    console.log(this.props.options);
+    return this.getOptionsItems(this.props.options, true);
   };
 
   getOptionsList = () => {
@@ -135,22 +132,34 @@ export default class TypeaheadSelector extends Component {
   };
 
   getOptionsItems = (options, grouping = false) => {
+    let groupText = {};
     return options.map(function(result, i) {
       let elementSelected = this.state.selectionIndex === i,
         disabledElement = result == this.props.fuzzySearchEmptyMessage,
-        item = this.getSearchItem(result, grouping);
+        item = this.getSearchItem(result, grouping),
+        Header = null;
+      if (grouping && !groupText[result.group]) {
+        groupText[result.group] = true;
+        Header = (
+          <li className="group-title">
+            <strong>{result.group}</strong>
+          </li>
+        );
+      }
       return (
-        <TypeaheadOption
-          isAllowOperator={this.props.isAllowOperator}
-          key={`${item}-${i}`}
-          disabled={disabledElement}
-          hover={disabledElement ? false : elementSelected}
-          customClasses={this.props.customClasses}
-          onClick={this._onClick.bind(this, result)}
-          grouping={grouping}
-        >
-          {item}
-        </TypeaheadOption>
+        <Fragment key={`${item}-${i}`}>
+          {Header}
+          <TypeaheadOption
+            isAllowOperator={this.props.isAllowOperator}
+            disabled={disabledElement}
+            hover={disabledElement ? false : elementSelected}
+            customClasses={this.props.customClasses}
+            onClick={this._onClick.bind(this, result)}
+            grouping={grouping}
+          >
+            {item}
+          </TypeaheadOption>
+        </Fragment>
       );
     }, this);
   };
