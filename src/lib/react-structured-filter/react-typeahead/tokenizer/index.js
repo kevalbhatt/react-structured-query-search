@@ -3,7 +3,7 @@ import propTypes from "prop-types";
 import Token from "./token";
 import KeyEvent from "../keyevent";
 import Typeahead from "../typeahead";
-import classNames from "classNames";
+import classNames from "classnames";
 
 /**
  * A typeahead that, when an option is selected, instead of simply filling
@@ -49,12 +49,17 @@ export default class TypeaheadTokenizer extends Component {
     this.skipCategorySet = new Set();
     this.state = {
       selected: [],
+      conditional: "",
       category: "",
       operator: "",
       options: this.props.options,
-      focused: false
+      focused: this.props.autoFocus || false,
+      ediTableTokenId: null,
+      queryValueToEdit: null
     };
     this.state.selected = this.getDefaultSelectedValue();
+    this.queryOptions = [];
+    this.queryResultObj = {};
   }
 
   _renderTokens() {
@@ -72,9 +77,12 @@ export default class TypeaheadTokenizer extends Component {
       let mykey =
         selected.category +
         (this.props.isAllowOperator ? selected.operator : "") +
-        (typeof selected.value == "string" ? selected.value : selected.value[fuzzySearchKeyAttribute]) +
+        (selected.value ? (typeof selected.value == "string" ? selected.value : selected.value[fuzzySearchKeyAttribute]) : "") +
         index;
-      return (
+
+      return this.state.ediTableTokenId === index ? (
+        this._getTypeahed({ mykey, show: true })
+      ) : (
         <Token
           key={mykey}
           className={classList}
@@ -82,6 +90,9 @@ export default class TypeaheadTokenizer extends Component {
           fuzzySearchKeyAttribute={fuzzySearchKeyAttribute}
           fuzzySearchIdAttribute={this.props.fuzzySearchIdAttribute}
           onRemoveToken={this._removeTokenForValue}
+          onEditToken={this._editTokenForValue.bind(this)}
+          ediTableTokenId={this.state.ediTableTokenId}
+          {...this.props}
         >
           {selected}
         </Token>
@@ -94,7 +105,8 @@ export default class TypeaheadTokenizer extends Component {
     if (this.state.category == "") {
       var categories = [];
       for (var i = 0; i < this.state.options.length; i++) {
-        categories.push(this.state.options[i].category);
+        const _category = this._getCategoryName(this.state.options[i].category);
+        categories.push(_category);
       }
       return categories;
     } else if (this.state.operator == "") {
@@ -118,6 +130,14 @@ export default class TypeaheadTokenizer extends Component {
     return this.state.options;
   }
 
+  _getCategoryName(category, displayTextFlag) {
+    let _category = category;
+    if (category.toString() === "[object Object]") {
+      _category = displayTextFlag ? category.displayName || category.name : category.name;
+    }
+    return _category;
+  }
+
   _getHeader() {
     if (this.state.category == "") {
       return "Category";
@@ -126,13 +146,11 @@ export default class TypeaheadTokenizer extends Component {
     } else {
       return "Value";
     }
-
-    return this.state.options;
   }
 
   _getCategoryType() {
     for (var i = 0; i < this.state.options.length; i++) {
-      if (this.state.options[i].category == this.state.category) {
+      if (this._getCategoryName(this.state.options[i].category) == this.state.category) {
         return this.state.options[i].type;
       }
     }
@@ -140,7 +158,7 @@ export default class TypeaheadTokenizer extends Component {
 
   _getCategoryOptions() {
     for (var i = 0; i < this.state.options.length; i++) {
-      if (this.state.options[i].category == this.state.category) {
+      if (this._getCategoryName(this.state.options[i].category) == this.state.category) {
         return this.state.options[i].options;
       }
     }
@@ -151,7 +169,6 @@ export default class TypeaheadTokenizer extends Component {
     if (event.keyCode !== KeyEvent.DOM_VK_BACK_SPACE) {
       return;
     }
-
     // Remove token ONLY when bksp pressed at beginning of line
     // without a selection
     var entry = this.typeaheadRef.getInputRef();
@@ -160,12 +177,20 @@ export default class TypeaheadTokenizer extends Component {
         this.setState({ operator: "" });
       } else if (this.state.category != "") {
         this.setState({ category: "" });
+      } else if (this.state.conditional != "") {
+        this.setState({ conditional: "" });
       } else {
         // No tokens
         if (!this.state.selected.length) {
+          if (this.props.emptyParentCategoryState) {
+            this.props.emptyParentCategoryState();
+          }
           return;
         }
-        this._removeTokenForValue(this.state.selected[this.state.selected.length - 1]);
+        if (this.state.ediTableTokenId === null || this.state.ediTableTokenId === undefined) {
+          this.state.queryValueToEdit = null;
+        }
+        this.state.ediTableTokenId === null && this._removeTokenForValue(this.state.selected[this.state.selected.length - 1]);
       }
       event.preventDefault();
     }
@@ -182,6 +207,30 @@ export default class TypeaheadTokenizer extends Component {
     this.props.onTokenRemove(this.state.selected);
 
     return;
+  };
+
+  _editTokenForValue = value => {
+    const index = this.state.selected.indexOf(value),
+      type = this.state.options.find(o => this._getCategoryName(o.category) === value.category).type;
+    let queryVal = null;
+    if (type === "query") {
+      queryVal = value.value.trim().substr(0, value.value.trim().length - 1);
+    }
+    this.setState(
+      {
+        conditional: value.conditional || "",
+        category: value.category || "",
+        operator: value.operator,
+        value: null,
+        ediTableTokenId: index,
+        focused: true,
+        queryValueToEdit: queryVal
+      },
+      () =>
+        setTimeout(() => {
+          this._focusInput();
+        }, 0)
+    );
   };
 
   _addTokenForValue = value => {
@@ -224,7 +273,7 @@ export default class TypeaheadTokenizer extends Component {
     }
   }
 
-  _getTypeahed({ classList }) {
+  _getTypeahed() {
     return (
       <Typeahead
         ref={ref => (this.typeaheadRef = ref)}
@@ -242,24 +291,31 @@ export default class TypeaheadTokenizer extends Component {
   }
 
   render() {
-    var classes = {};
-    classes[this.props.customClasses.typeahead] = !!this.props.customClasses.typeahead;
-    var classList = classNames(classes);
+    var classes = {
+      "filter-tokenizer": true
+    };
+    classes[this.props.customClasses.query] = this.props.customClasses.query;
+    var classList = classNames(classes, {
+      "padding-for-clear-all": this.props.isAllowClearAll,
+      disabled: this.props.disabled
+    });
     return (
       <div
-        className={`filter-tokenizer ${this.props.isAllowClearAll ? "padding-for-clear-all" : ""} ${this.props.disabled ? "disabled" : ""}`}
+        className={classList}
         ref={node => {
           this.node = node;
         }}
       >
         <div className="token-collection" onClick={this.onClickOfDivFocusInput}>
           {this._renderTokens()}
-          <div className="filter-input-group">
-            <div className="filter-category">{this.state.category} </div>
-            <div className="filter-operator">{this.state.operator} </div>
-
-            {this._getTypeahed({ classList })}
-          </div>
+          {this.state.ediTableTokenId === null && (
+            <div className="filter-input-group">
+              <div className="filter-conditional">{this.state.conditional}</div>
+              <div className="filter-category">{this.state.category}</div>
+              <div className="filter-operator">{this.state.operator}</div>
+              {this._getTypeahed({ show: false })}
+            </div>
+          )}
         </div>
         {this.props.isAllowClearAll ? this._getClearAllButton() : null}
       </div>

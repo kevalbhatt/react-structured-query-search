@@ -6,7 +6,7 @@ import TypeaheadSelector from "./selector";
 import KeyEvent from "../keyevent";
 import fuzzy from "fuzzy";
 import DatePicker from "../../react-datepicker/datepicker.js";
-import classNames from "classNames";
+import classNames from "classnames";
 
 /**
  * A "typeahead", an auto-completing text input
@@ -55,6 +55,7 @@ export default class Typeahead extends Component {
     this.entryRef = null;
     this.selRef = null;
     this.inputRef = null;
+    this.fuzzySearchKeyAttribute = this.props.fuzzySearchKeyAttribute;
     this.state = {
       // The set of all options... Does this need to be state?  I guess for lazy load...
       loadingOptions: false,
@@ -70,9 +71,14 @@ export default class Typeahead extends Component {
 
       // A valid typeahead value
       selection: null,
-      focused: false
+      focused: this.props.isElemenFocused || false
     };
-    this.fuzzySearchKeyAttribute = this.props.fuzzySearchKeyAttribute;
+  }
+
+  componentDidMount() {
+    if (this.props.isElemenFocused && this.entryRef && this.entryRef.focus) {
+      this.entryRef.focus();
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -118,12 +124,12 @@ export default class Typeahead extends Component {
     }
   }
 
-  setEntryText(value) {
+  setEntryText = value => {
     if (this.entryRef != null) {
       this.entryRef.value = value;
     }
     this._onTextEntryUpdated();
-  }
+  };
 
   _renderIncrementalSearchResults() {
     if (this.props.isElemenFocused == undefined) {
@@ -175,16 +181,26 @@ export default class Typeahead extends Component {
     this.props.onOptionSelected(option);
   }
 
-  _onTextEntryUpdated = () => {
+  _onTextEntryUpdated = (val, queryResult) => {
     var value = "";
     if (this.entryRef != null) {
       value = this.entryRef.value;
     }
-    this.setState({
-      visible: this.getOptionsForValue(value, this.state.options),
-      selection: null,
-      entryValue: value
-    });
+    if (this.state.datatype === "query") {
+      value = val;
+    }
+    this.setState(
+      {
+        visible: this.getOptionsForValue(value, this.state.options),
+        selection: null,
+        entryValue: value
+      },
+      () => {
+        if (this.state.datatype === "query" && val !== undefined) {
+          this.props.onOptionSelected(value, queryResult, this.entryRef);
+        }
+      }
+    );
   };
 
   _onEnter = event => {
@@ -225,9 +241,17 @@ export default class Typeahead extends Component {
       // If no options were provided so we can match on anything
       if (this.props.options.length === 0) {
         this._onOptionSelected(this.state.entryValue);
-      } else if (this.props.options.indexOf(this.state.entryValue) > -1 || (this.state.entryValue.trim() != "" && this.props.isAllowCustomValue)) {
+      } else if (
+        this.props.options.indexOf(this.state.entryValue) > -1 ||
+        (this.state.entryValue && this.state.entryValue.trim() != "" && this.props.isAllowCustomValue)
+      ) {
         // If what has been typed in is an exact match of one of the options
         this._onOptionSelected(this.state.entryValue);
+      } else if (this.props.customQuery) {
+        var bracket = this.props.bracketHasClosed();
+        if (bracket.openCount === bracket.closeCount && bracket.openCount > 0) {
+          this.props.updateParentInputText();
+        }
       }
     }
 
@@ -251,9 +275,8 @@ export default class Typeahead extends Component {
   _onFocus = event => {
     if (this.props.onElementFocused) {
       this.props.onElementFocused({ focused: true });
-    } else {
-      this.setState({ focused: true });
     }
+    this.setState({ focused: true });
   };
 
   isDescendant(parent, child) {

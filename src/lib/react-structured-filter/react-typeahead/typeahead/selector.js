@@ -1,7 +1,7 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import propTypes from "prop-types";
 import TypeaheadOption from "./option";
-import classNames from "classNames";
+import classNames from "classnames";
 
 /**
  * Container for the options rendered as part of the autocompletion process
@@ -48,7 +48,7 @@ export default class TypeaheadSelector extends Component {
     return this.props.options[index];
   }
 
-  _onClick(result) {
+  _onClick(result, event) {
     this.props.onOptionSelected(result);
   }
 
@@ -92,18 +92,78 @@ export default class TypeaheadSelector extends Component {
   //   }
   // };
 
-  getSearchItem(item) {
+  getSearchItem(item, grouping) {
     if (this.props.renderSearchItem) {
       this.props.renderSearchItem(item);
     } else {
       if (typeof item == "object") {
         let attr = this.props.fuzzySearchKeyAttribute;
-        return item[attr] ? item[attr] : item["string"];
+        if (grouping && item.displayName) {
+          return item.displayName;
+        } else {
+          return item[attr] || item["string"];
+        }
+        //return grouping && item.displayName ? item.displayName : item[attr] ? item[attr] : item["string"];
       } else if (typeof item == "string") {
         return item;
       }
     }
   }
+
+  groupingOptions = () => {
+    const opt = {};
+    this.props.options.sort((a, b) => {
+      let aL = a.group.toLocaleLowerCase(),
+        bL = b.group.toLocaleLowerCase();
+      if (aL === bL) {
+        return 0;
+      }
+      return aL < bL ? -1 : 1;
+    });
+    return this.getOptionsItems(this.props.options, true);
+  };
+
+  getOptionsList = () => {
+    let options = this.props.options;
+    if (this.props.options && this.props.options.length && this.props.options[0].group) {
+      return this.groupingOptions();
+    } else {
+      return this.getOptionsItems(options);
+    }
+  };
+
+  getOptionsItems = (options, grouping = false) => {
+    let groupText = {};
+    return options.map(function(result, i) {
+      let elementSelected = this.state.selectionIndex === i,
+        disabledElement = result == this.props.fuzzySearchEmptyMessage,
+        item = this.getSearchItem(result, grouping),
+        Header = null;
+      if (grouping && !groupText[result.group]) {
+        groupText[result.group] = true;
+        Header = (
+          <li className="group-title">
+            <strong>{result.group}</strong>
+          </li>
+        );
+      }
+      return (
+        <Fragment key={`${item}-${i}`}>
+          {Header}
+          <TypeaheadOption
+            isAllowOperator={this.props.isAllowOperator}
+            disabled={disabledElement}
+            hover={disabledElement ? false : elementSelected}
+            customClasses={this.props.customClasses}
+            onClick={this._onClick.bind(this, result)}
+            grouping={grouping}
+          >
+            {item}
+          </TypeaheadOption>
+        </Fragment>
+      );
+    }, this);
+  };
 
   render() {
     var classes = {
@@ -112,23 +172,7 @@ export default class TypeaheadSelector extends Component {
     classes[this.props.customClasses.results] = this.props.customClasses.results;
     var classList = classNames(classes);
     this.selectedItemRef = null;
-    var results = this.props.options.map(function(result, i) {
-      let elementSelected = this.state.selectionIndex === i,
-        disabledElement = result == this.props.fuzzySearchEmptyMessage,
-        item = this.getSearchItem(result);
-      return (
-        <TypeaheadOption
-          isAllowOperator={this.props.isAllowOperator}
-          key={`${item}-${i}`}
-          disabled={disabledElement}
-          hover={disabledElement ? false : elementSelected}
-          customClasses={this.props.customClasses}
-          onClick={this._onClick.bind(this, result)}
-        >
-          {item}
-        </TypeaheadOption>
-      );
-    }, this);
+    var results = this.getOptionsList();
     return (
       <ul className={classList} ref={ref => (this.listParentRef = ref)}>
         {this.props.fromTokenizer === true && this.props.isAllowSearchDropDownHeader === true ? (

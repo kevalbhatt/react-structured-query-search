@@ -12,33 +12,103 @@ export default class App extends Component {
 		// NOTE: The operator will seen to UI only if props isAllowOperator={true}
 		this.options = [
 			{
-				category: "Symbol",
+				category: "Type",
 				type: "textoptions",
 				operator: ["==", "!="],
+				isAllowDuplicateCategories: false,
 				options: this.getSymbolOptions
 			},
 			{
-				category: "Name",
-				type: "text",
-				isAllowDuplicateCategories: false,
-				operator: () => ["==", "!==", "containes"]
-			},
-			{ category: "Price", type: "number" },
-			{ category: "MarketCap", type: "number" },
-			{ category: "IPO", type: "date" },
-			{
-				category: "Sector",
+				category: "Classification",
 				type: "textoptions",
+				operator: ["==", "!="],
+				isAllowDuplicateCategories: false,
 				fuzzySearchKeyAttribute: "sectorName",
-				isAllowCustomValue: false,
-				isAllowDuplicateOptions: false,
 				options: this.getSectorOptions
 			},
 			{
-				category: "Industry",
+				category: "Terms",
 				type: "textoptions",
-				isAllowCustomValue: false,
+				operator: null,
+				isAllowDuplicateCategories: true,
 				options: this.getIndustryOptions
+			},
+			{
+				category: "Label",
+				type: "text",
+				isAllowDuplicateCategories: false,
+				operator: null
+			},
+			{
+				category: "Query",
+				isAllowDuplicateCategories: false,
+				type: "query",
+				isAllowCustomValue: true,
+				options: null,
+				operator: null,
+				fuzzySearchKeyAttribute: "displayName",
+				queryOptions: [
+					{
+						category: {
+							name: "QualifiedName",
+							displayName: "QualifiedName (string)",
+							group: "In house"
+						},
+						fuzzySearchKeyAttribute: "displayName",
+						type: "text",
+						operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
+						options: null
+					},
+					{
+						category: {
+							name: "Description",
+							displayName: "Description (string)",
+							group: "In house"
+						},
+						fuzzySearchKeyAttribute: "displayName",
+						type: "text",
+						operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
+						options: null
+					},
+					{
+						category: {
+							name: "Name",
+							displayName: "Name (string)",
+							group: "out source"
+						},
+						fuzzySearchKeyAttribute: "displayName",
+						type: "text",
+						operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
+						options: null
+					},
+					{
+						category: {
+							name: "Owner",
+							displayName: "Owner (string)",
+							group: "out source"
+						},
+						fuzzySearchKeyAttribute: "displayName",
+						type: "textoptions",
+						operator: ["==", "!=", "contains", "begins with", "ends with", "is null", "is not null"],
+						options: [
+							{
+								name: "user1",
+								displayName: "User 1",
+								group: "In house"
+							},
+							{
+								name: "user2",
+								displayName: "User 2",
+								group: "out source"
+							},
+							{
+								name: "user3",
+								displayName: "User 3",
+								group: "In house"
+							}
+						]
+					}
+				]
 			}
 		];
 	}
@@ -74,25 +144,23 @@ export default class App extends Component {
 	 * @return {[array]}
 	 */
 	getIndustryOptions() {
-		return [{ name: "Business Services", id: 1 }, { name: "Other Specialty Stores", id: 2 }];
+		return [{ name: "Business Services", id: 1 }, { name: "Other Specialty Stores", id: 2 }, { name: "demo test", id: 3 }];
 	}
 
 	getTokenItem(obj) {
 		let val = obj.children;
-		return `${val["category"]}: val`;
+		return <div>{`testing`}</div>;
 	}
 
 	render() {
 		return (
 			<div className="container">
 				<ReactStructuredQuerySearch
-					defaultSelected={[
-						{ category: "Sector", value: { sectorName: "Finance", id: 1 } },
-						{ category: "Sector", value: { sectorName: "Consumer Services", id: 2 } },
-						{ category: "Industry", value: { name: "Other Specialty Stores", id: 2 } }
-					]}
+					isAllowOperator={true}
+					defaultSelected={[]}
 					options={this.options}
-					//renderTokenItem={this.getTokenItem}
+					placeholder="Add filters..."
+					// renderTokenItem={this.getTokenItem}
 					updateOptions={({ updatedValues, addedValue }) => {
 						if (addedValue && addedValue.category === "Symbol" && addedValue.value === "TFSC") {
 							this.options.push({
