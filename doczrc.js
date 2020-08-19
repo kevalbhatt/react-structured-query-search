@@ -1,5 +1,5 @@
 module.exports = {
-	title: "React Structured Query Search",
+	title: "React Structured Query Search (doc is in progress)",
 	themeConfig: {
 		showPlaygroundEditor: true
 	},
